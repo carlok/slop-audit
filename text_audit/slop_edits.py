@@ -110,15 +110,15 @@ def _from_write_good(tool: str, native: Any) -> list[dict[str, str]]:
             continue
         m = _WRITE_GOOD_LINE.match(s)
         if m:
-            msg = m.group("msg").strip().strip('"')
-            # quote often appears as "word" at start of msg
+            msg = m.group("msg").strip()
+            # write-good --parse: "word" can weaken meaning
             quote = None
             qm = re.match(r'^"([^"]+)"\s*(.*)$', msg)
             if qm:
-                quote, rest = qm.group(1), qm.group(2)
-                message = rest or msg
+                quote, rest = qm.group(1), qm.group(2).strip()
+                message = rest if rest else msg
             else:
-                message = msg
+                message = msg.strip('"')
             loc = f"line {m.group('line')}:{m.group('col')}"
             items.append(
                 _item(
@@ -325,13 +325,20 @@ def collect_slop_edit_suggestions(tool_results: list) -> list[dict[str, str]]:
         collected.extend(extractor(tool, native))
 
     seen: set[tuple[str, str, str]] = set()
+    seen_quotes: set[str] = set()
     out: list[dict[str, str]] = []
     for item in collected:
+        if not item.get("message"):
+            continue
         key = _dedupe_key(item)
         if key in seen:
             continue
-        if not item.get("message"):
+        q = (item.get("quote") or "").strip().lower()
+        # Prefer first tool's message for the same quoted span
+        if q and q in seen_quotes:
             continue
         seen.add(key)
+        if q:
+            seen_quotes.add(q)
         out.append(item)
     return out

@@ -1,0 +1,10 @@
+extends: existence
+message: "Heavy transition '%s' can read as formulaic."
+level: suggestion
+ignorecase: true
+tokens:
+  - moreover
+  - furthermore
+  - additionally
+  - consequently
+  - thus

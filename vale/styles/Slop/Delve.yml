@@ -1,0 +1,9 @@
+extends: existence
+message: "Avoid formulaic '%s'."
+level: warning
+ignorecase: true
+tokens:
+  - delve
+  - delving
+  - delved
+  - delves

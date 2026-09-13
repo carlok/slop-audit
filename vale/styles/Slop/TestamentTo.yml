@@ -1,0 +1,7 @@
+extends: existence
+message: "Avoid formulaic '%s'."
+level: warning
+ignorecase: true
+tokens:
+  - testament to
+  - a testament to

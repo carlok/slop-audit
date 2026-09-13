@@ -1,0 +1,10 @@
+extends: existence
+message: "Avoid formulaic verb '%s'."
+level: suggestion
+ignorecase: true
+tokens:
+  - underscores
+  - underscore
+  - showcasing
+  - showcases
+  - pivotal

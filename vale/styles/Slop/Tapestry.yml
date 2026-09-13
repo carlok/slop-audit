@@ -1,0 +1,8 @@
+extends: existence
+message: "Avoid formulaic metaphor '%s'."
+level: warning
+ignorecase: true
+tokens:
+  - tapestry
+  - landscape of
+  - realm of

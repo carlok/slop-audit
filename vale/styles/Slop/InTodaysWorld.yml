@@ -1,0 +1,9 @@
+extends: existence
+message: "Avoid formulaic '%s'."
+level: warning
+ignorecase: true
+tokens:
+  - in today's world
+  - in todays world
+  - in today's digital age
+  - in the modern world

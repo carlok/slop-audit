@@ -19,7 +19,8 @@ echo "Smoke: running ${PY} run_audit.py --force"
 "${PY}" run_audit.py --force
 rc=$?
 
-# Refresh tool matrix from normalized results when present
+# Write thin smoke matrix to a separate file so we do not clobber the rich handoff
+# matrix in logs/tool_matrix.md (install status + notes).
 if [[ -f normalized/results.json ]]; then
   "${PY}" - << 'PY'
 import json
@@ -36,10 +37,13 @@ planned = [
 by = {t["tool"]: t for t in results["tools"]}
 ready = not_run = 0
 lines = [
-    "# Tool READY / NOT_RUN matrix",
+    "# Tool READY / NOT_RUN matrix (smoke)",
     "",
     f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')} (smoke.sh)",
     f"Input SHA-256: {results['input']['sha256']}",
+    "",
+    "Authoritative handoff matrix (install + notes): `logs/tool_matrix.md`.",
+    "This file is the thin smoke refresh only.",
     "",
     "| ID | Tool | Matrix | Run status | Reason |",
     "|----|------|--------|------------|--------|",
@@ -56,8 +60,9 @@ for id_, key in planned:
         not_run += 1
     lines.append(f"| {id_} | `{key}` | {matrix} | {status} | {reason} |")
 lines += ["", f"**Counts:** READY={ready}, NOT_RUN={not_run}, total={ready+not_run}", ""]
-(ROOT / "logs/tool_matrix.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-print(f"Wrote logs/tool_matrix.md READY={ready} NOT_RUN={not_run}")
+out = ROOT / "logs/tool_matrix.smoke.md"
+out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+print(f"Wrote logs/tool_matrix.smoke.md READY={ready} NOT_RUN={not_run}")
 PY
 fi
 

@@ -14,6 +14,12 @@ TOOL = "slopsift"
 VERSION = "0.11.0"
 _BIN = ROOT / "tools" / "node_modules" / ".bin" / "slopsift"
 
+_UNMATCHED_MARKERS = (
+    "no supported files matched",
+    "unmatched-pattern",
+    "unmatched pattern",
+)
+
 
 def parse_stdout(stdout: str, word_count: int) -> dict[str, Any]:
     """Parse slopsift JSON (--format json); use counts, no native 0–100."""
@@ -80,15 +86,24 @@ def _not_run(reason: str, commands: list[str]) -> ToolResult:
     )
 
 
+def _is_unmatched_pattern(text: str) -> bool:
+    lower = text.lower()
+    return any(m in lower for m in _UNMATCHED_MARKERS)
+
+
 def run(input_path: Path, word_count: int) -> ToolResult:
     path = Path(input_path)
     bin_path = _resolve_bin()
+    # --no-ignore: input/target.txt is gitignored; slopsift respects .gitignore by default.
+    # --no-error-on-unmatched-pattern: empty match → exit 0 instead of config failure.
     commands = [
         str(bin_path or "slopsift"),
         "--format",
         "json",
         "--ext",
         ".txt,.md,.markdown,.mdx",
+        "--no-ignore",
+        "--no-error-on-unmatched-pattern",
         "--exit-zero",
         str(path),
     ]
@@ -102,6 +117,19 @@ def run(input_path: Path, word_count: int) -> ToolResult:
 
     stdout = (proc["stdout"] or "").strip()
     stderr = proc["stderr"] or ""
+    combined = f"{stderr}\n{stdout}"
+
+    # Pure pattern-match / empty-match failures → NOT_RUN (binary present, nothing to lint)
+    if _is_unmatched_pattern(combined):
+        reason = (
+            stderr.strip()
+            or stdout.strip()
+            or "no supported files matched (pattern / ignore)"
+        )
+        return _not_run(
+            f"pattern match: {reason[:400]}",
+            commands,
+        )
 
     # Node engines warning / hard failure
     if proc["returncode"] not in (0, 1) and not stdout:

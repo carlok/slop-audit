@@ -51,5 +51,6 @@ From `logs/install_status.json` (best-effort; install OK ≠ runtime READY for h
 - Slop Index and AI-Likeness Ensemble are separate.
 - Epistemic: never conclude text was "written by AI"; use concentration + N of M detectors form.
 - Heavy ML (binoculars, fastdetectgpt) correctly NOT_RUN when MemAvailable < published model budgets.
-- slopsift ERROR on plain `.txt` (pattern match) → matrix NOT_RUN.
+- slopsift: `--no-ignore` + `--no-error-on-unmatched-pattern` so gitignored `input/target.txt` is linted; pure unmatched-pattern failures map to NOT_RUN.
+- Smoke refresh writes `logs/tool_matrix.smoke.md` (does not overwrite this handoff file).
 

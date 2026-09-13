@@ -14,7 +14,7 @@ text-audit/
   raw/              # raw/<tool>/* stdout/stderr/native JSON + cache meta
   normalized/       # results.json
   report/           # report.md, report.json
-  logs/             # install.log, run.log, env, pip freezes, tool_matrix.md
+  logs/             # install.log, run.log, env, pip freezes, tool_matrix.md (+ .smoke.md)
   scripts/          # install_all.sh, smoke.sh, inspect_env.py, helpers
   envs/             # isolated venvs per dependency family (gitignored)
   vale/             # .vale.ini + custom Slop styles
@@ -73,7 +73,20 @@ bash scripts/smoke.sh
 
 ## Tool matrix
 
-See `logs/tool_matrix.md` (READY / NOT_RUN from the last smoke or regenerating run). Heavy ML detectors may be `NOT_RUN` when RAM is below published model budgets.
+- **Authoritative handoff:** `logs/tool_matrix.md` (includes install-status reference, friendly names, epistemic / ML notes).
+- **Smoke refresh:** `scripts/smoke.sh` writes the thin READY table to `logs/tool_matrix.smoke.md` and does **not** overwrite the handoff matrix.
+
+Heavy ML detectors may be `NOT_RUN` when RAM is below published model budgets.
+
+## Density / short text
+
+Heuristic density uses denominator `max(word_count, 100)` before the published formula  
+`score = 100 * (1 - exp(-density/10))` where `density = weighted_findings / denom * 1000`.  
+Density scores are **unreliable on very short texts** (below ~100 words); treat bands as advisory only for short pastes.
+
+## Known gaps
+
+- **Independent Agreement / corroborated rows:** `independent_agreement` helper and report section exist, but live runs do not yet extract shared finding labels from adapter natives into corroborated phenomena (always empty until a post-pass is wired).
 
 ## Constraints (summary)
 

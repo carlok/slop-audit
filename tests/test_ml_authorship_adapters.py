@@ -180,8 +180,27 @@ def test_clarity_mocked_ok_path():
 
 
 def test_live_memory_gates_heavy_tools():
-    """Live: Falcon / gpt-j pair must NOT_RUN on typical laptop RAM with exact reason."""
+    """Live: Falcon / gpt-j pair must NOT_RUN when MemAvailable is below budgets.
+
+    Soft-skips when host RAM is high enough that the tools might actually run;
+    mocked gate tests remain the portable contract guarantee.
+    """
+    import pytest
+
     from text_audit.adapters import binoculars_adapter, fastdetectgpt_adapter
+    from text_audit.adapters.ml_common import (
+        MEM_BINOCULARS_FALCON,
+        MEM_FASTDETECT_DEFAULT,
+        mem_available_bytes,
+    )
+
+    avail = mem_available_bytes()
+    # Skip only when BOTH heavy tools could clear their memory gates.
+    if avail >= min(MEM_BINOCULARS_FALCON, MEM_FASTDETECT_DEFAULT):
+        pytest.skip(
+            f"MemAvailable={avail} >= heavy-tool budgets; "
+            "live NOT_RUN assertion not portable (mocked gates cover contract)"
+        )
 
     for adapter in (binoculars_adapter, fastdetectgpt_adapter):
         r = adapter.run(FIX, word_count=10)

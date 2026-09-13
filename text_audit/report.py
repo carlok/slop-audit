@@ -139,6 +139,12 @@ def _render_markdown(payload: dict[str, Any]) -> str:
     lines.append("")
     lines.append(f"Band: {slop.get('band') or 'n/a'}")
     lines.append("")
+    lines.append(
+        "Note: density scores use denominator max(word_count, 100) and are "
+        "unreliable on very short texts; formula remains "
+        "100*(1-exp(-density/10)) with density = weighted/denom*1000."
+    )
+    lines.append("")
     lines.append("Weights used (renormalized over available tools):")
     lines.append("")
     lines.append("```json")

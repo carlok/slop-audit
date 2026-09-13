@@ -170,7 +170,7 @@ def _from_dslop(tool: str, native: Any) -> list[dict[str, str]]:
     # Pass 1: FIX: block messages
     in_fix = False
     for line in stdout.splitlines():
-        if line.strip() == "fix:":
+        if line.strip().upper() == "FIX:":
             in_fix = True
             continue
         if in_fix:

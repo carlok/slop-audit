@@ -1,0 +1,332 @@
+[2026-09-13T14:01:07Z] install_all starting ROOT=/workspace/text-audit/.worktrees/feat-text-audit-harness
+[2026-09-13T14:01:07Z] python=/usr/bin/python3 uv=/usr/local/bin/uv node=/usr/bin/node
+[2026-09-13T14:01:07Z] === BEGIN slop_env ===
+[2026-09-13T14:01:07Z] venv exists: /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop
+[2026-09-13T14:01:07Z] CMD: uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/python slopscore-lint
+Using Python 3.13.5 environment at: envs/slop
+Checked 1 package in 5ms
+[2026-09-13T14:01:08Z] OK  slopscore-lint — uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/python slopscore-lint
+<stdin>:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-09-13T14:01:08Z] CMD: uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/python dslop
+Using Python 3.13.5 environment at: envs/slop
+Checked 1 package in 1ms
+[2026-09-13T14:01:08Z] OK  dslop — uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/python dslop
+<stdin>:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-09-13T14:01:08Z] CMD: uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/python textstat
+Using Python 3.13.5 environment at: envs/slop
+Checked 1 package in 3ms
+[2026-09-13T14:01:08Z] OK  textstat — uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/python textstat
+<stdin>:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-09-13T14:01:08Z] CMD: uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/python proselint
+Using Python 3.13.5 environment at: envs/slop
+Checked 1 package in 1ms
+[2026-09-13T14:01:08Z] OK  proselint — uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/python proselint
+<stdin>:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-09-13T14:01:08Z] CMD: uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/python git+https://github.com/antydizajn/ai-slop-detect.git
+Using Python 3.13.5 environment at: envs/slop
+Resolved 1 package in 416ms
+Checked 1 package in 0.29ms
+[2026-09-13T14:01:08Z] OK  ai-slop-detect — uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/python git+https://github.com/antydizajn/ai-slop-detect.git
+<stdin>:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-09-13T14:01:08Z] OK  envs/slop — create_venv + package installs
+<stdin>:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-09-13T14:01:08Z] === END slop_env (rc=0) ===
+[2026-09-13T14:01:08Z] === BEGIN node_tools ===
+[2026-09-13T14:01:08Z] CMD: npm install --prefix /workspace/text-audit/.worktrees/feat-text-audit-harness/tools slopsift
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'writinglint-core@0.5.0',
+npm WARN EBADENGINE   required: { node: '>=24' },
+npm WARN EBADENGINE   current: { node: 'v20.19.2', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'writinglint-parser-node@0.3.2',
+npm WARN EBADENGINE   required: { node: '>=24' },
+npm WARN EBADENGINE   current: { node: 'v20.19.2', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'writinglint-rulepack-ai-style@0.6.2',
+npm WARN EBADENGINE   required: { node: '>=24' },
+npm WARN EBADENGINE   current: { node: 'v20.19.2', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'writinglint-rulepack-reader-first@0.5.0',
+npm WARN EBADENGINE   required: { node: '>=24' },
+npm WARN EBADENGINE   current: { node: 'v20.19.2', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'slopsift@0.11.0',
+npm WARN EBADENGINE   required: { node: '>=24' },
+npm WARN EBADENGINE   current: { node: 'v20.19.2', npm: '9.2.0' }
+npm WARN EBADENGINE }
+
+up to date, audited 36 packages in 257ms
+
+11 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+[2026-09-13T14:01:09Z] OK  slopsift — npm install --prefix /workspace/text-audit/.worktrees/feat-text-audit-harness/tools slopsift
+<stdin>:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-09-13T14:01:09Z] CMD: npm install --prefix /workspace/text-audit/.worktrees/feat-text-audit-harness/tools slop-lint
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'slopsift@0.11.0',
+npm WARN EBADENGINE   required: { node: '>=24' },
+npm WARN EBADENGINE   current: { node: 'v20.19.2', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'writinglint-core@0.5.0',
+npm WARN EBADENGINE   required: { node: '>=24' },
+npm WARN EBADENGINE   current: { node: 'v20.19.2', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'writinglint-parser-node@0.3.2',
+npm WARN EBADENGINE   required: { node: '>=24' },
+npm WARN EBADENGINE   current: { node: 'v20.19.2', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'writinglint-rulepack-ai-style@0.6.2',
+npm WARN EBADENGINE   required: { node: '>=24' },
+npm WARN EBADENGINE   current: { node: 'v20.19.2', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'writinglint-rulepack-reader-first@0.5.0',
+npm WARN EBADENGINE   required: { node: '>=24' },
+npm WARN EBADENGINE   current: { node: 'v20.19.2', npm: '9.2.0' }
+npm WARN EBADENGINE }
+
+up to date, audited 36 packages in 251ms
+
+11 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+[2026-09-13T14:01:09Z] OK  slop-lint — npm install --prefix /workspace/text-audit/.worktrees/feat-text-audit-harness/tools slop-lint
+<stdin>:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-09-13T14:01:09Z] CMD: npm install --prefix /workspace/text-audit/.worktrees/feat-text-audit-harness/tools write-good
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'slopsift@0.11.0',
+npm WARN EBADENGINE   required: { node: '>=24' },
+npm WARN EBADENGINE   current: { node: 'v20.19.2', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'writinglint-core@0.5.0',
+npm WARN EBADENGINE   required: { node: '>=24' },
+npm WARN EBADENGINE   current: { node: 'v20.19.2', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'writinglint-parser-node@0.3.2',
+npm WARN EBADENGINE   required: { node: '>=24' },
+npm WARN EBADENGINE   current: { node: 'v20.19.2', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'writinglint-rulepack-ai-style@0.6.2',
+npm WARN EBADENGINE   required: { node: '>=24' },
+npm WARN EBADENGINE   current: { node: 'v20.19.2', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'writinglint-rulepack-reader-first@0.5.0',
+npm WARN EBADENGINE   required: { node: '>=24' },
+npm WARN EBADENGINE   current: { node: 'v20.19.2', npm: '9.2.0' }
+npm WARN EBADENGINE }
+
+up to date, audited 36 packages in 272ms
+
+11 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+[2026-09-13T14:01:10Z] OK  write-good — npm install --prefix /workspace/text-audit/.worktrees/feat-text-audit-harness/tools write-good
+<stdin>:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-09-13T14:01:10Z] === END node_tools (rc=0) ===
+[2026-09-13T14:01:10Z] === BEGIN vale ===
+[2026-09-13T14:01:10Z] CMD: curl -fsSL https://github.com/vale-cli/vale/releases/download/v3.21.0/vale_3.21.0_Linux_64-bit.tar.gz → /workspace/text-audit/.worktrees/feat-text-audit-harness/tools/vale/
+[2026-09-13T14:01:11Z] OK  vale — curl -fsSL https://github.com/vale-cli/vale/releases/download/v3.21.0/vale_3.21.0_Linux_64-bit.tar.gz → /workspace/text-audit/.worktrees/feat-text-audit-harness/tools/vale/
+<stdin>:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-09-13T14:01:11Z] === END vale (rc=0) ===
+[2026-09-13T14:01:11Z] === BEGIN languagetool ===
+[2026-09-13T14:01:11Z] OK  languagetool — already present under /workspace/text-audit/.worktrees/feat-text-audit-harness/tools/languagetool
+<stdin>:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-09-13T14:01:11Z] === END languagetool (rc=0) ===
+[2026-09-13T14:01:11Z] === BEGIN ml_envs ===
+[2026-09-13T14:01:11Z] venv exists: /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-aidetect
+[2026-09-13T14:01:11Z] CMD: uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-aidetect/bin/python torch --index-url https://download.pytorch.org/whl/cpu
+Using Python 3.13.5 environment at: envs/ml-aidetect
+Checked 1 package in 3ms
+[2026-09-13T14:01:11Z] CMD: uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-aidetect/bin/python transformers accelerate sentencepiece
+Using Python 3.13.5 environment at: envs/ml-aidetect
+Checked 3 packages in 4ms
+[2026-09-13T14:01:11Z] CMD: uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-aidetect/bin/python git+https://github.com/houtini-ai/ai-detect.git
+Using Python 3.13.5 environment at: envs/ml-aidetect
+Resolved 58 packages in 643ms
+Checked 58 packages in 0.67ms
+[2026-09-13T14:01:12Z] OK  ai-detect — uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-aidetect/bin/python git+https://github.com/houtini-ai/ai-detect.git
+<stdin>:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-09-13T14:01:12Z] venv exists: /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-clarity
+[2026-09-13T14:01:12Z] CMD: uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-clarity/bin/python torch --index-url https://download.pytorch.org/whl/cpu
+Using Python 3.13.5 environment at: envs/ml-clarity
+Checked 1 package in 2ms
+[2026-09-13T14:01:12Z] CMD: uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-clarity/bin/python transformers accelerate
+Using Python 3.13.5 environment at: envs/ml-clarity
+Checked 2 packages in 4ms
+[2026-09-13T14:01:12Z] CMD: uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-clarity/bin/python git+https://github.com/roowus/clarity.git
+Using Python 3.13.5 environment at: envs/ml-clarity
+Resolved 36 packages in 760ms
+Checked 36 packages in 0.42ms
+[2026-09-13T14:01:13Z] OK  clarity — uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-clarity/bin/python git+https://github.com/roowus/clarity.git
+<stdin>:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-09-13T14:01:13Z] venv exists: /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-binoculars
+Using Python 3.13.5 environment at: envs/ml-binoculars
+Checked 1 package in 2ms
+[2026-09-13T14:01:13Z] CMD: clone Binoculars + pip install -e . --no-deps + modern transformers
+Cloning into '/workspace/text-audit/.worktrees/feat-text-audit-harness/envs/src/ml-binoculars'...
+Using Python 3.13.5 environment at: envs/ml-binoculars
+Resolved 62 packages in 16ms
+Uninstalled 1 package in 2ms
+Installed 27 packages in 45ms
+ + aiohappyeyeballs==2.7.1
+ + aiohttp==3.14.3
+ + aiosignal==1.4.0
+ + attrs==26.1.0
+ + charset-normalizer==3.5.1
+ + cloudpickle==3.1.2
+ + datasets==5.0.1
+ + dill==0.4.1
+ + frozenlist==1.8.0
+ - fsspec==2026.7.0
+ + fsspec==2026.6.0
+ + joblib==1.6.0
+ + multidict==6.8.0
+ + multiprocess==0.70.19
+ + narwhals==2.26.0
+ + pandas==3.0.5
+ + propcache==0.5.2
+ + pyarrow==25.0.1
+ + python-dateutil==2.9.0.post0
+ + requests==2.34.2
+ + scikit-learn==1.9.1
+ + scipy==1.18.1
+ + sentencepiece==0.2.2
+ + six==1.17.0
+ + threadpoolctl==3.6.0
+ + urllib3==2.7.0
+ + xxhash==4.0.1
+ + yarl==1.24.5
+Using Python 3.13.5 environment at: envs/ml-binoculars
+Resolved 1 package in 478ms
+   Building binoculars @ file:///workspace/text-audit/.worktrees/feat-text-audit-harness/envs/src/ml-binoculars
+      Built binoculars @ file:///workspace/text-audit/.worktrees/feat-text-audit-harness/envs/src/ml-binoculars
+Prepared 1 package in 198ms
+Installed 1 package in 0.81ms
+ + binoculars==0.0.10 (from file:///workspace/text-audit/.worktrees/feat-text-audit-harness/envs/src/ml-binoculars)
+[2026-09-13T14:01:17Z] OK  binoculars — clone Binoculars + pip install -e . --no-deps + modern transformers
+<stdin>:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-09-13T14:01:17Z] venv exists: /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-fastdetect
+Using Python 3.13.5 environment at: envs/ml-fastdetect
+Checked 1 package in 2ms
+[2026-09-13T14:01:17Z] CMD: git clone fast-detectgpt + pip install requirements (no setup.py)
+Cloning into '/workspace/text-audit/.worktrees/feat-text-audit-harness/envs/src/ml-fastdetect'...
+Using Python 3.13.5 environment at: envs/ml-fastdetect
+Resolved 46 packages in 90ms
+   Building tokenizers==0.13.3
+Downloading transformers (6.6MiB)
+ Downloaded transformers
+  × Failed to build `tokenizers==0.13.3`
+  ├─▶ The build backend returned an error
+  ╰─▶ Call to `setuptools.build_meta.build_wheel` failed (exit status: 1)
+
+      [stdout]
+      running bdist_wheel
+      running build
+      running build_py
+      running build_ext
+      running build_rust
+
+      [stderr]
+      /home/box/.cache/uv/builds-v0/.tmptW8bSV/lib/python3.13/site-packages/setuptools/dist.py:765:
+      SetuptoolsDeprecationWarning: License classifiers are deprecated.
+      !!
+
+      
+      ********************************************************************************
+              Please consider removing the following classifiers in favor of a
+      SPDX license expression:
+
+              License :: OSI Approved :: Apache Software License
+
+              See
+      https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license
+      for details.
+      
+      ********************************************************************************
+
+      !!
+        self._finalize_license_expression()
+      cargo rustc --lib --message-format=json-render-diagnostics
+      --manifest-path Cargo.toml --release -v --features pyo3/extension-module
+      --crate-type cdylib
+      error: rustc 1.85.1 is not supported by the following packages:
+        encoding_rs@0.8.41 requires rustc 1.88
+        encoding_rs@0.8.41 requires rustc 1.88
+        encoding_rs@0.8.41 requires rustc 1.88
+        icu_collections@2.3.0 requires rustc 1.88
+        icu_locale_core@2.3.0 requires rustc 1.88
+        icu_normalizer@2.3.0 requires rustc 1.88
+        icu_normalizer_data@2.3.0 requires rustc 1.88
+        icu_normalizer_data@2.3.0 requires rustc 1.88
+        icu_normalizer_data@2.3.0 requires rustc 1.88
+        icu_properties@2.3.0 requires rustc 1.88
+        icu_properties_data@2.3.0 requires rustc 1.88
+        icu_properties_data@2.3.0 requires rustc 1.88
+        icu_properties_data@2.3.0 requires rustc 1.88
+        icu_provider@2.3.1 requires rustc 1.88
+        idna_adapter@1.2.2 requires rustc 1.86
+        multiversion@0.9.0 requires rustc 1.86
+        multiversion-macros@0.9.0 requires rustc 1.86
+        time@0.3.55 requires rustc 1.88.0
+        time-core@0.1.9 requires rustc 1.88.0
+      Either upgrade rustc or select compatible dependency versions with
+      `cargo update <name>@<current-ver> --precise <compatible-ver>`
+      where `<compatible-ver>` is the latest version supporting rustc 1.85.1
+
+      error: `cargo rustc --lib --message-format=json-render-diagnostics
+      --manifest-path Cargo.toml --release -v --features pyo3/extension-module
+      --crate-type cdylib` failed with code 101
+
+
+hint: `tokenizers` (v0.13.3) was included because `transformers` (v4.28.1) depends on `tokenizers`
+hint: Build failures usually indicate a problem with the package or the build environment
+Using Python 3.13.5 environment at: envs/ml-fastdetect
+Resolved 51 packages in 16ms
+Uninstalled 1 package in 1ms
+Installed 25 packages in 43ms
+ + aiohappyeyeballs==2.7.1
+ + aiohttp==3.14.3
+ + aiosignal==1.4.0
+ + attrs==26.1.0
+ + charset-normalizer==3.5.1
+ + cloudpickle==3.1.2
+ + datasets==5.0.1
+ + defusedxml==0.7.1
+ + dill==0.4.1
+ + frozenlist==1.8.0
+ - fsspec==2026.7.0
+ + fsspec==2026.6.0
+ + joblib==1.6.0
+ + multidict==6.8.0
+ + multiprocess==0.70.19
+ + nltk==3.10.3
+ + pandas==3.0.5
+ + propcache==0.5.2
+ + pyarrow==25.0.1
+ + python-dateutil==2.9.0.post0
+ + requests==2.34.2
+ + sentencepiece==0.2.2
+ + six==1.17.0
+ + urllib3==2.7.0
+ + xxhash==4.0.1
+ + yarl==1.24.5
+[2026-09-13T14:01:25Z] OK  fastdetectgpt — git clone fast-detectgpt + pip install requirements (no setup.py)
+<stdin>:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-09-13T14:01:25Z] === END ml_envs (rc=0) ===
+install_all summary: OK=15 FAIL=0 NOT_RUN=0 total=15
+[2026-09-13T14:01:25Z] install_all completed (best-effort; exit 0)

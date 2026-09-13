@@ -1,1 +1,25 @@
 .worktrees/
+.venv/
+venv/
+envs/
+node_modules/
+tools/node_modules/
+tools/vale/vale
+tools/languagetool/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+raw/
+normalized/
+report/
+input/target.txt
+# model / HF caches under project
+.cache/
+**/huggingface/
+**/.huggingface/
+**/torch_cache/
+*.pt
+*.bin
+*.safetensors

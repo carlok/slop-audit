@@ -1,0 +1,86 @@
+{
+  "summary": {
+    "FAIL": 0,
+    "NOT_RUN": 0,
+    "OK": 15,
+    "total": 15
+  },
+  "tools": {
+    "ai-detect": {
+      "command": "uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-aidetect/bin/python git+https://github.com/houtini-ai/ai-detect.git",
+      "reason": "",
+      "status": "OK"
+    },
+    "ai-slop-detect": {
+      "command": "uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/python git+https://github.com/antydizajn/ai-slop-detect.git",
+      "reason": "",
+      "status": "OK"
+    },
+    "binoculars": {
+      "command": "clone Binoculars + pip install -e . --no-deps + modern transformers",
+      "reason": "installed with modern transformers (upstream pin skipped)",
+      "status": "OK"
+    },
+    "clarity": {
+      "command": "uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-clarity/bin/python git+https://github.com/roowus/clarity.git",
+      "reason": "",
+      "status": "OK"
+    },
+    "dslop": {
+      "command": "uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/python dslop",
+      "reason": "",
+      "status": "OK"
+    },
+    "envs/slop": {
+      "command": "create_venv + package installs",
+      "reason": "freeze \u2192 logs/pip_freeze_slop.txt",
+      "status": "OK"
+    },
+    "fastdetectgpt": {
+      "command": "git clone fast-detectgpt + pip install requirements (no setup.py)",
+      "reason": "venv+deps+clone ready (script repo, no pip package)",
+      "status": "OK"
+    },
+    "languagetool": {
+      "command": "already present under /workspace/text-audit/.worktrees/feat-text-audit-harness/tools/languagetool",
+      "reason": "",
+      "status": "OK"
+    },
+    "proselint": {
+      "command": "uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/python proselint",
+      "reason": "",
+      "status": "OK"
+    },
+    "slop-lint": {
+      "command": "npm install --prefix /workspace/text-audit/.worktrees/feat-text-audit-harness/tools slop-lint",
+      "reason": "",
+      "status": "OK"
+    },
+    "slopscore-lint": {
+      "command": "uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/python slopscore-lint",
+      "reason": "",
+      "status": "OK"
+    },
+    "slopsift": {
+      "command": "npm install --prefix /workspace/text-audit/.worktrees/feat-text-audit-harness/tools slopsift",
+      "reason": "",
+      "status": "OK"
+    },
+    "textstat": {
+      "command": "uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/python textstat",
+      "reason": "",
+      "status": "OK"
+    },
+    "vale": {
+      "command": "curl -fsSL https://github.com/vale-cli/vale/releases/download/v3.21.0/vale_3.21.0_Linux_64-bit.tar.gz \u2192 /workspace/text-audit/.worktrees/feat-text-audit-harness/tools/vale/",
+      "reason": "installed /workspace/text-audit/.worktrees/feat-text-audit-harness/tools/vale/vale (v3.21.0)",
+      "status": "OK"
+    },
+    "write-good": {
+      "command": "npm install --prefix /workspace/text-audit/.worktrees/feat-text-audit-harness/tools write-good",
+      "reason": "",
+      "status": "OK"
+    }
+  },
+  "updated_at": "2026-09-13T14:01:25Z"
+}

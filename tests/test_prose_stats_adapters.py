@@ -240,20 +240,32 @@ def test_integration_run_or_not_run(mod_name, tool, category, probe):
     assert result.tool == tool
     assert result.category == category
     if _exists(probe):
-        assert result.status in (ToolStatus.OK, ToolStatus.ERROR, ToolStatus.NOT_RUN)
-        if result.status == ToolStatus.OK:
-            if category == CATEGORY_STATS:
-                assert result.normalized_score is None
-                assert isinstance(result.native, dict)
-                assert "sentence_length" in result.native
-            else:
-                assert result.normalized_score is not None
-                assert 0.0 <= float(result.normalized_score) <= 100.0
-            raw = ROOT / "raw" / tool
-            assert raw.is_dir()
-        elif result.status == ToolStatus.NOT_RUN:
+        # Vale packages may be unsynced → NOT_RUN citing styles; otherwise expect a run.
+        styles_needed = {
+            "vale": ROOT / "vale" / "styles" / "write-good",
+            "harper": ROOT / "vale" / "styles" / "Harper",
+        }
+        need = styles_needed.get(tool)
+        if need is not None and not need.is_dir():
+            assert result.status == ToolStatus.NOT_RUN
             assert result.normalized_score is None
             assert result.reason
+            assert "sync" in result.reason.lower() or "styles" in result.reason.lower()
+        else:
+            assert result.status in (ToolStatus.OK, ToolStatus.ERROR)
+            if result.status == ToolStatus.OK:
+                if category == CATEGORY_STATS:
+                    assert result.normalized_score is None
+                    assert isinstance(result.native, dict)
+                    assert "sentence_length" in result.native
+                else:
+                    assert result.normalized_score is not None
+                    assert 0.0 <= float(result.normalized_score) <= 100.0
+                raw = ROOT / "raw" / tool
+                assert raw.is_dir()
+            else:
+                assert result.normalized_score is None
+                assert result.reason
     else:
         assert result.status == ToolStatus.NOT_RUN
         assert result.normalized_score is None

@@ -13,6 +13,7 @@ TOOL = "vale"
 VERSION = "3.21.0"
 _BIN = ROOT / "tools" / "vale" / "vale"
 _CONFIG = ROOT / "vale" / ".vale.ini"
+_STYLE_WG = ROOT / "vale" / "styles" / "write-good"
 
 _SEV = {
     "error": "errors",
@@ -87,6 +88,10 @@ def run(input_path: Path, word_count: int) -> ToolResult:
         return _not_run(f"missing binary: {_BIN}", commands)
     if not _CONFIG.is_file():
         return _not_run(f"missing config: {_CONFIG}", commands)
+    if not _STYLE_WG.is_dir():
+        return _not_run(
+            f"missing write-good styles (run vale sync): {_STYLE_WG}", commands
+        )
 
     proc = run_cmd(commands, timeout=120)
     write_raw(TOOL, "stdout.txt", proc["stdout"])

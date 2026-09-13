@@ -70,8 +70,9 @@ def run(input_path: Path, word_count: int) -> ToolResult:
     write_raw(TOOL, "returncode.txt", str(proc["returncode"]))
 
     stdout = proc["stdout"] or ""
-    # write-good --parse exits non-zero when findings exist
-    if proc["returncode"] not in (0, 1, 255) and not stdout.strip() and not (proc["stderr"] or "").strip():
+    # write-good --parse exits non-zero when findings exist (0/1/255).
+    # Hard failures often emit stderr only — treat empty stdout + bad rc as ERROR.
+    if proc["returncode"] not in (0, 1, 255) and not stdout.strip():
         return ToolResult(
             tool=TOOL,
             status=ToolStatus.ERROR,
@@ -79,7 +80,7 @@ def run(input_path: Path, word_count: int) -> ToolResult:
             category=CATEGORY_PROSE,
             commands=commands,
             raw_dir=f"raw/{TOOL}",
-            native={"returncode": proc["returncode"]},
+            native={"returncode": proc["returncode"], "stderr": (proc["stderr"] or "")[:500]},
             normalized_score=None,
             findings_count=0,
             errors=0,

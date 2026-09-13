@@ -23,3 +23,9 @@ input/target.txt
 *.pt
 *.bin
 *.safetensors
+
+# Vale packages downloaded by `vale sync` (keep only custom Slop/ tracked)
+vale/styles/Harper/
+vale/styles/write-good/
+vale/styles/config/
+vale/styles/.vale-config/

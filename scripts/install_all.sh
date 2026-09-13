@@ -167,6 +167,19 @@ install_vale() {
     fi
   fi
   rm -rf "${tmp}"
+
+  # Sync Packages from vale/.vale.ini (write-good, Harper) into gitignored styles/
+  if [[ -x "${dest}/vale" && -f "${ROOT}/vale/.vale.ini" ]]; then
+    cmd="${ROOT}/scripts/vale_sync.sh"
+    log_msg "CMD: ${cmd}"
+    if "${ROOT}/scripts/vale_sync.sh" >>"${INSTALL_LOG}" 2>&1; then
+      log_ok "vale-sync" "${cmd}" "packages → vale/styles/ (gitignored)"
+    else
+      log_fail "vale-sync" "vale sync failed; adapters NOT_RUN until styles present" "${cmd}"
+    fi
+  else
+    log_skip "vale-sync" "vale binary or vale/.vale.ini missing" "scripts/vale_sync.sh"
+  fi
 }
 
 # ---------------------------------------------------------------------------

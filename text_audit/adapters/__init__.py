@@ -6,8 +6,12 @@ from collections.abc import Callable
 from typing import Any
 
 from . import (
+    ai_detect,
     ai_slop_detect,
+    binoculars_adapter,
+    clarity_adapter,
     dslop_adapter,
+    fastdetectgpt_adapter,
     harper_adapter,
     languagetool_adapter,
     proselint_adapter,
@@ -31,6 +35,10 @@ ALL_ADAPTERS: list[Callable[..., Any]] = [
     harper_adapter.run,
     languagetool_adapter.run,
     stats_adapter.run,
+    ai_detect.run,
+    clarity_adapter.run,
+    binoculars_adapter.run,
+    fastdetectgpt_adapter.run,
 ]
 
 

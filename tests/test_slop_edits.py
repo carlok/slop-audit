@@ -20,7 +20,7 @@ def _ok(tool, category, native):
     )
 
 
-def test_extracts_vale_and_dedupes_write_good_same_quote():
+def test_extracts_vale_and_dedupes_same_quote_across_tools():
     vale = _ok(
         "vale",
         CATEGORY_PROSE,
@@ -45,11 +45,9 @@ def test_extracts_vale_and_dedupes_write_good_same_quote():
         },
     )
     items = collect_slop_edit_suggestions([vale, wg])
-    # same quote+message family may still differ by message text — dedupe is exact
     quotes = [i.get("quote") for i in items]
-    assert "It seems that" in quotes
-    assert any(i["tool"] == "vale" for i in items)
-    assert any(i["tool"] == "write_good" for i in items)
+    assert quotes.count("It seems that") == 1
+    assert items[0]["tool"] == "vale"
 
 
 def test_skips_ai_authorship_tools():
@@ -67,7 +65,7 @@ def test_dslop_uses_fix_message():
             "dslop: 1 violation in 1 file\n"
             "  /tmp/t.txt:15:59 demonstrative-is\n"
             "\n"
-            "fix:\n"
+            "FIX:\n"
             '  demonstrative-is: rewrite without "this is the"\n'
         ),
         "violations": ["/tmp/t.txt:15:59 demonstrative-is"],
@@ -77,3 +75,14 @@ def test_dslop_uses_fix_message():
     assert items[0]["rule"] == "demonstrative-is"
     assert "rewrite without" in items[0]["message"]
     assert items[0]["location"] == "line 15:59"
+
+
+def test_write_good_parses_quoted_span():
+    wg = _ok(
+        "write_good",
+        CATEGORY_PROSE,
+        {"findings": ['/x.txt:7:62:"only" can weaken meaning']},
+    )
+    items = collect_slop_edit_suggestions([wg])
+    assert items[0]["quote"] == "only"
+    assert items[0]["message"] == "can weaken meaning"

@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from text_audit.models import ToolResult
+from text_audit.slop_edits import collect_slop_edit_suggestions
 
 
 def _as_dict(obj: Any) -> Any:
@@ -211,6 +212,29 @@ def _render_markdown(payload: dict[str, Any]) -> str:
             else:
                 lines.append(f"- {item}")
     lines.append("")
+    lines.append("## Edits that would lower the Slop Index")
+    lines.append("")
+    lines.append(
+        "Deterministic list from style/slop tools only (not AI-authorship detectors). "
+        "Messages are the tools' own wording; nothing here is LLM-generated."
+    )
+    lines.append("")
+    edits = payload.get("slop_edits") or []
+    if not edits:
+        lines.append("_No actionable style/slop findings from successful tools._")
+    else:
+        for i, e in enumerate(edits, 1):
+            quote = e.get("quote")
+            loc = e.get("location")
+            head = f"{i}. **{e.get('tool')}** / `{e.get('rule')}`"
+            if loc:
+                head += f" ({loc})"
+            lines.append(head)
+            if quote:
+                lines.append(f"   - Quote: `{quote}`")
+            lines.append(f"   - {e.get('message')}")
+    lines.append("")
+
     lines.append("## Final assessment")
     lines.append("")
     lines.append(executive)
@@ -248,6 +272,8 @@ def write_reports(
 
     executive = _executive_summary(slop_d, ai_d, tool_rows)
 
+    slop_edits = collect_slop_edit_suggestions(list(tool_results or []))
+
     payload: dict[str, Any] = {
         "executive": executive,
         "environment": env_d,
@@ -256,6 +282,7 @@ def write_reports(
         "slop_index": slop_d,
         "statistical": stats_d,
         "ai_likeness": ai_d,
+        "slop_edits": slop_edits,
         "corroborated": corr_l,
         "false_positives": fp_l,
         "human_editorial": "deferred until real user text",

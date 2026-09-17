@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **Superseded (2026-09-17):** GitHub publication is no longer out of scope — the live private repo is [`carlok/slop-audit`](https://github.com/carlok/slop-audit). References to `/workspace/text-audit` in this plan are historical.
+
 **Goal:** Build a local multi-tool text-audit orchestrator at `/workspace/text-audit` that installs what it can, runs adapters A–N best-effort, and produces Slop Index + separate AI-Likeness reports without fabricating missing-tool scores.
 
 **Architecture:** Thin tool adapters return a shared `ToolResult` dataclass; `run_audit.py` orchestrates inspect → input stats → adapters → normalize → score → `report.md`/`report.json`. Isolated venvs under `envs/`; raw outputs under `raw/<tool>/`; restartable by input SHA + tool version.

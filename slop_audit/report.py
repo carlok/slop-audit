@@ -6,8 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
-from text_audit.models import ToolResult
-from text_audit.slop_edits import collect_slop_edit_suggestions
+from slop_audit.models import ToolResult
+from slop_audit.slop_edits import collect_slop_edit_suggestions
 
 
 def _as_dict(obj: Any) -> Any:

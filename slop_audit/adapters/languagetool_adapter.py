@@ -1,33 +1,50 @@
-"""Adapter H: write-good (npm)."""
+"""Adapter J: LanguageTool local distribution only."""
 from __future__ import annotations
 
 import json
-import re
 import shutil
 from pathlib import Path
 from typing import Any
 
-from text_audit.adapters.base import ROOT, run_cmd, write_raw
-from text_audit.models import CATEGORY_PROSE, ToolResult, ToolStatus
-from text_audit.normalize import normalize_from_counts
+from slop_audit.adapters.base import ROOT, run_cmd, write_raw
+from slop_audit.models import CATEGORY_PROSE, ToolResult, ToolStatus
+from slop_audit.normalize import normalize_from_counts
 
-TOOL = "write_good"
-VERSION = "1.0.8"
-_BIN = ROOT / "tools" / "node_modules" / ".bin" / "write-good"
+TOOL = "languagetool"
+VERSION = "6.6"
+_LT_ROOT = ROOT / "tools" / "languagetool"
+_JAR = _LT_ROOT / "LanguageTool-6.6" / "languagetool-commandline.jar"
 
-# path:line:col:message
-_LINE = re.compile(r"^[^:\n]+:\d+:\d+:.+")
+# misspellings → info; everything else → warning
+_INFO_TYPES = frozenset({"misspelling", "typographical", "uncategorized"})
+
+
+def _find_jar() -> Path | None:
+    if _JAR.is_file():
+        return _JAR
+    matches = sorted(_LT_ROOT.glob("LanguageTool-*/languagetool-commandline.jar"))
+    return matches[0] if matches else None
 
 
 def parse_stdout(stdout: str, word_count: int) -> dict[str, Any]:
-    """Parse write-good --parse lines; each finding → warning."""
-    findings = [ln for ln in stdout.splitlines() if _LINE.match(ln.strip())]
-    warnings = len(findings)
-    errors = 0
-    info = 0
+    """Parse LanguageTool --json; map issueType to severities."""
+    data = json.loads(stdout)
+    matches = data.get("matches") or []
+    if not isinstance(matches, list):
+        matches = []
+    errors = warnings = info = 0
+    for m in matches:
+        if not isinstance(m, dict):
+            continue
+        rule = m.get("rule") or {}
+        issue = str(rule.get("issueType") or "").lower()
+        if issue in _INFO_TYPES:
+            info += 1
+        else:
+            warnings += 1
     normalized = normalize_from_counts(errors, warnings, info, word_count)
     return {
-        "native": {"stdout": stdout, "findings": findings},
+        "native": data,
         "errors": errors,
         "warnings": warnings,
         "info": info,
@@ -56,23 +73,29 @@ def _not_run(reason: str, commands: list[str]) -> ToolResult:
 
 def run(input_path: Path, word_count: int) -> ToolResult:
     path = Path(input_path)
-    bin_path = _BIN if _BIN.is_file() else None
-    if bin_path is None:
-        which = shutil.which("write-good")
-        bin_path = Path(which) if which else None
-    commands = [str(bin_path or _BIN), "--parse", str(path)]
-    if bin_path is None or not Path(bin_path).is_file():
-        return _not_run(f"missing binary: {_BIN}", commands)
+    java = shutil.which("java")
+    jar = _find_jar()
+    commands = [
+        java or "java",
+        "-jar",
+        str(jar or _JAR),
+        "-l",
+        "en-US",
+        "--json",
+        str(path),
+    ]
+    if java is None:
+        return _not_run("missing binary: java", commands)
+    if jar is None:
+        return _not_run(f"missing local LanguageTool jar under {_LT_ROOT}", commands)
 
-    proc = run_cmd(commands, timeout=120)
+    proc = run_cmd(commands, timeout=300)
     write_raw(TOOL, "stdout.txt", proc["stdout"])
     write_raw(TOOL, "stderr.txt", proc["stderr"])
     write_raw(TOOL, "returncode.txt", str(proc["returncode"]))
 
-    stdout = proc["stdout"] or ""
-    # write-good --parse exits non-zero when findings exist (0/1/255).
-    # Hard failures often emit stderr only — treat empty stdout + bad rc as ERROR.
-    if proc["returncode"] not in (0, 1, 255) and not stdout.strip():
+    stdout = (proc["stdout"] or "").strip()
+    if not stdout:
         return ToolResult(
             tool=TOOL,
             status=ToolStatus.ERROR,
@@ -80,18 +103,19 @@ def run(input_path: Path, word_count: int) -> ToolResult:
             category=CATEGORY_PROSE,
             commands=commands,
             raw_dir=f"raw/{TOOL}",
-            native={"returncode": proc["returncode"], "stderr": (proc["stderr"] or "")[:500]},
+            native={"returncode": proc["returncode"]},
             normalized_score=None,
             findings_count=0,
             errors=0,
             warnings=0,
             info=0,
-            reason=f"write-good rc={proc['returncode']}: {(proc['stderr'] or '')[:300]}",
+            reason=f"empty stdout (rc={proc['returncode']}): {(proc['stderr'] or '')[:300]}",
         )
 
     try:
         parsed = parse_stdout(stdout, word_count)
-    except (TypeError, ValueError) as e:
+    except (json.JSONDecodeError, TypeError, ValueError, KeyError) as e:
+        write_raw(TOOL, "parse_error.txt", f"{type(e).__name__}: {e}\n{stdout[:2000]}")
         return ToolResult(
             tool=TOOL,
             status=ToolStatus.ERROR,
@@ -108,11 +132,16 @@ def run(input_path: Path, word_count: int) -> ToolResult:
             reason=f"parse error: {type(e).__name__}: {e}",
         )
 
-    write_raw(TOOL, "parsed.json", json.dumps(parsed["native"], indent=2) + "\n")
+    ver = VERSION
+    soft = (parsed["native"] or {}).get("software") if isinstance(parsed["native"], dict) else None
+    if isinstance(soft, dict) and soft.get("version"):
+        ver = str(soft["version"])
+
+    write_raw(TOOL, "parsed.json", json.dumps({"match_count": parsed["findings_count"]}, indent=2) + "\n")
     return ToolResult(
         tool=TOOL,
         status=ToolStatus.OK,
-        version=VERSION,
+        version=ver,
         category=CATEGORY_PROSE,
         commands=commands,
         raw_dir=f"raw/{TOOL}",
@@ -123,6 +152,7 @@ def run(input_path: Path, word_count: int) -> ToolResult:
         warnings=parsed["warnings"],
         info=parsed["info"],
         reason="",
+        notes="local LanguageTool only (no cloud API)",
     )
 
 

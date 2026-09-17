@@ -1,57 +1,24 @@
-"""Adapter A: SlopScore (slopscore-lint)."""
+"""Adapter I: Harper via Vale Harper style (no direct CLI required)."""
 from __future__ import annotations
 
 import json
 from pathlib import Path
 from typing import Any
 
-from text_audit.adapters.base import ROOT, run_cmd, write_raw
-from text_audit.models import CATEGORY_SLOP, ToolResult, ToolStatus
-from text_audit.normalize import normalize_from_counts
+from slop_audit.adapters.base import ROOT, run_cmd, write_raw
+from slop_audit.adapters.vale_adapter import parse_stdout as parse_vale_stdout
+from slop_audit.models import CATEGORY_PROSE, ToolResult, ToolStatus
 
-TOOL = "slopscore"
-VERSION = "0.13.0"
-_BIN = ROOT / "envs" / "slop" / "bin" / "slopscore-lint"
-
-_SEV_MAP = {
-    "high": "errors",
-    "error": "errors",
-    "medium": "warnings",
-    "warning": "warnings",
-    "warn": "warnings",
-    "low": "info",
-    "info": "info",
-}
+TOOL = "harper"
+VERSION = "vale-Harper"
+_BIN = ROOT / "tools" / "vale" / "vale"
+_CONFIG = ROOT / "vale" / "harper.ini"
+_STYLE = ROOT / "vale" / "styles" / "Harper"
 
 
 def parse_stdout(stdout: str, word_count: int) -> dict[str, Any]:
-    """Parse slopscore-lint JSON stdout into counts + native score."""
-    data = json.loads(stdout)
-    evidence = data.get("evidence") or []
-    errors = warnings = info = 0
-    for item in evidence:
-        sev = str(item.get("severity") or "info").lower()
-        bucket = _SEV_MAP.get(sev, "info")
-        if bucket == "errors":
-            errors += 1
-        elif bucket == "warnings":
-            warnings += 1
-        else:
-            info += 1
-    score_block = data.get("score") or {}
-    native_score = score_block.get("slop_score")
-    if native_score is None:
-        normalized = normalize_from_counts(errors, warnings, info, word_count)
-    else:
-        normalized = float(native_score)
-    return {
-        "native": data,
-        "errors": errors,
-        "warnings": warnings,
-        "info": info,
-        "findings_count": errors + warnings + info,
-        "normalized_score": normalized,
-    }
+    """Reuse Vale JSON parser for Harper style alerts."""
+    return parse_vale_stdout(stdout, word_count)
 
 
 def _not_run(reason: str, commands: list[str]) -> ToolResult:
@@ -59,7 +26,7 @@ def _not_run(reason: str, commands: list[str]) -> ToolResult:
         tool=TOOL,
         status=ToolStatus.NOT_RUN,
         version=VERSION,
-        category=CATEGORY_SLOP,
+        category=CATEGORY_PROSE,
         commands=commands,
         raw_dir=f"raw/{TOOL}",
         native=None,
@@ -74,22 +41,33 @@ def _not_run(reason: str, commands: list[str]) -> ToolResult:
 
 def run(input_path: Path, word_count: int) -> ToolResult:
     path = Path(input_path)
-    commands = [str(_BIN), "scan", "-f", "json", str(path)]
+    commands = [
+        str(_BIN),
+        f"--config={_CONFIG}",
+        "--output=JSON",
+        str(path),
+    ]
     if not _BIN.is_file():
         return _not_run(f"missing binary: {_BIN}", commands)
+    if not _CONFIG.is_file():
+        return _not_run(f"missing config: {_CONFIG}", commands)
+    if not _STYLE.is_dir():
+        return _not_run(
+            f"missing Harper styles (run vale sync): {_STYLE}", commands
+        )
 
-    proc = run_cmd(commands, timeout=120)
+    proc = run_cmd(commands, timeout=180)
     write_raw(TOOL, "stdout.txt", proc["stdout"])
     write_raw(TOOL, "stderr.txt", proc["stderr"])
     write_raw(TOOL, "returncode.txt", str(proc["returncode"]))
 
-    stdout = proc["stdout"].strip()
-    if not stdout:
+    stdout = proc["stdout"] or ""
+    if proc["returncode"] not in (0, 1) and not stdout.strip():
         return ToolResult(
             tool=TOOL,
             status=ToolStatus.ERROR,
             version=VERSION,
-            category=CATEGORY_SLOP,
+            category=CATEGORY_PROSE,
             commands=commands,
             raw_dir=f"raw/{TOOL}",
             native={"returncode": proc["returncode"]},
@@ -98,18 +76,18 @@ def run(input_path: Path, word_count: int) -> ToolResult:
             errors=0,
             warnings=0,
             info=0,
-            reason=f"empty stdout (rc={proc['returncode']}): {proc['stderr'][:300]}",
+            reason=f"harper/vale rc={proc['returncode']}: {(proc['stderr'] or '')[:300]}",
         )
 
     try:
-        parsed = parse_stdout(stdout, word_count)
-    except (json.JSONDecodeError, TypeError, KeyError, ValueError) as e:
+        parsed = parse_stdout(stdout if stdout.strip() else "{}", word_count)
+    except (json.JSONDecodeError, TypeError, ValueError) as e:
         write_raw(TOOL, "parse_error.txt", f"{type(e).__name__}: {e}\n{stdout[:2000]}")
         return ToolResult(
             tool=TOOL,
             status=ToolStatus.ERROR,
             version=VERSION,
-            category=CATEGORY_SLOP,
+            category=CATEGORY_PROSE,
             commands=commands,
             raw_dir=f"raw/{TOOL}",
             native=None,
@@ -121,12 +99,12 @@ def run(input_path: Path, word_count: int) -> ToolResult:
             reason=f"parse error: {type(e).__name__}: {e}",
         )
 
-    write_raw(TOOL, "result.json", json.dumps(parsed["native"], indent=2) + "\n")
+    write_raw(TOOL, "parsed.json", json.dumps(parsed["native"], indent=2) + "\n")
     return ToolResult(
         tool=TOOL,
         status=ToolStatus.OK,
-        version=str(parsed["native"].get("version") or VERSION),
-        category=CATEGORY_SLOP,
+        version=VERSION,
+        category=CATEGORY_PROSE,
         commands=commands,
         raw_dir=f"raw/{TOOL}",
         native=parsed["native"],
@@ -136,6 +114,7 @@ def run(input_path: Path, word_count: int) -> ToolResult:
         warnings=parsed["warnings"],
         info=parsed["info"],
         reason="",
+        notes="Harper via Vale Harper style package (no direct harper CLI)",
     )
 
 

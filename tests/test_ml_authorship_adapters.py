@@ -8,10 +8,10 @@ from unittest import mock
 
 import pytest
 
-from text_audit.adapters import get_adapters
-from text_audit.adapters.base import ROOT
-from text_audit.models import CATEGORY_AI, ToolStatus
-from text_audit.scoring_ai import TOOL_FAMILY
+from slop_audit.adapters import get_adapters
+from slop_audit.adapters.base import ROOT
+from slop_audit.models import CATEGORY_AI, ToolStatus
+from slop_audit.scoring_ai import TOOL_FAMILY
 
 FIX = ROOT / "tests" / "fixtures" / "short.txt"
 
@@ -60,7 +60,7 @@ def test_registry_includes_ml_tools():
 
 
 def test_parse_ai_detect_uses_model_ai_pct():
-    from text_audit.adapters.ai_detect import map_ai_detect_score, parse_stdout
+    from slop_audit.adapters.ai_detect import map_ai_detect_score, parse_stdout
 
     parsed = parse_stdout(AI_DETECT_JSON)
     assert parsed["normalized_score"] == pytest.approx(72.5)
@@ -70,7 +70,7 @@ def test_parse_ai_detect_uses_model_ai_pct():
 
 
 def test_map_clarity_score_threshold_semantics():
-    from text_audit.adapters.clarity_adapter import map_clarity_score, parse_stdout
+    from slop_audit.adapters.clarity_adapter import map_clarity_score, parse_stdout
 
     assert map_clarity_score(0.905, 0.905, 1.11) == pytest.approx(100.0)
     assert map_clarity_score(1.11, 0.905, 1.11) == pytest.approx(0.0)
@@ -84,7 +84,7 @@ def test_map_clarity_score_threshold_semantics():
 
 
 def test_map_binoculars_score_boundary_at_threshold():
-    from text_audit.adapters.binoculars_adapter import map_binoculars_score, parse_native
+    from slop_audit.adapters.binoculars_adapter import map_binoculars_score, parse_native
 
     thr = 0.8536432310785527
     assert map_binoculars_score(thr, thr) == pytest.approx(50.0)
@@ -98,7 +98,7 @@ def test_map_binoculars_score_boundary_at_threshold():
 
 
 def test_map_fastdetect_probability():
-    from text_audit.adapters.fastdetectgpt_adapter import (
+    from slop_audit.adapters.fastdetectgpt_adapter import (
         map_fastdetect_score,
         parse_native,
     )
@@ -111,7 +111,7 @@ def test_map_fastdetect_probability():
 
 
 def test_memory_gate_reports_reason():
-    from text_audit.adapters import ml_common
+    from slop_audit.adapters import ml_common
 
     with mock.patch.object(ml_common, "mem_available_bytes", return_value=100):
         reason = ml_common.memory_gate(ml_common.GIB, "test-tool")
@@ -121,7 +121,7 @@ def test_memory_gate_reports_reason():
 
 
 def test_category_ai_authorship_on_missing_venv():
-    from text_audit.adapters import ai_detect as ad
+    from slop_audit.adapters import ai_detect as ad
 
     with mock.patch.object(ad, "_PY", Path("/nonexistent/python")):
         with mock.patch.object(ad, "_BIN", Path("/nonexistent/ai-detect")):
@@ -136,8 +136,8 @@ def test_category_ai_authorship_on_missing_venv():
 @pytest.mark.parametrize(
     "mod_name,tool",
     [
-        ("text_audit.adapters.binoculars_adapter", "binoculars"),
-        ("text_audit.adapters.fastdetectgpt_adapter", "fastdetectgpt"),
+        ("slop_audit.adapters.binoculars_adapter", "binoculars"),
+        ("slop_audit.adapters.fastdetectgpt_adapter", "fastdetectgpt"),
     ],
 )
 def test_heavy_adapters_not_run_when_mem_low(mod_name, tool):
@@ -168,7 +168,7 @@ def test_heavy_adapters_not_run_when_mem_low(mod_name, tool):
 
 
 def test_ai_detect_mocked_ok_path():
-    from text_audit.adapters import ai_detect as ad
+    from slop_audit.adapters import ai_detect as ad
 
     fake_proc = {
         "returncode": 0,
@@ -189,7 +189,7 @@ def test_ai_detect_mocked_ok_path():
 
 
 def test_clarity_mocked_ok_path():
-    from text_audit.adapters import clarity_adapter as ca
+    from slop_audit.adapters import clarity_adapter as ca
 
     fake_proc = {"returncode": 0, "stdout": CLARITY_JSON, "stderr": ""}
     fake = _fake_installed_path()
@@ -213,8 +213,8 @@ def test_live_memory_gates_heavy_tools():
     """
     import pytest
 
-    from text_audit.adapters import binoculars_adapter, fastdetectgpt_adapter
-    from text_audit.adapters.ml_common import (
+    from slop_audit.adapters import binoculars_adapter, fastdetectgpt_adapter
+    from slop_audit.adapters.ml_common import (
         MEM_BINOCULARS_FALCON,
         MEM_FASTDETECT_DEFAULT,
         mem_available_bytes,

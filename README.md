@@ -53,16 +53,16 @@ bash scripts/smoke.sh
 
 Heavy local ML detectors (e.g. Binoculars, Fast-DetectGPT) may show `NOT_RUN` when available RAM is below their published budgets. That is expected; the rest of the harness still runs.
 
-## Python package name (Phase 2)
+## Python package
 
-The **distribution / repo** name is `slop-audit` (`pip` / `pyproject.toml`). The **import package** is still `text_audit` until Phase 2 renames it to `slop_audit`; imports and `run_audit.py` use `text_audit` today.
+The **distribution / repo** name is `slop-audit` (`pip` / `pyproject.toml`). Import the harness as **`slop_audit`** (for example `from slop_audit.runner import run_audit`). The CLI entrypoint remains `run_audit.py` at the repo root.
 
 ## Layout
 
 ```text
 slop-audit/
   input/            # target.txt (authoritative input; gitignored)
-  text_audit/       # Python package: adapters, scoring, runner, report
+  slop_audit/       # Python package: adapters, scoring, runner, report
   tools/            # local binaries / npm packages
   raw/              # per-tool raw artifacts + cache meta (gitignored)
   normalized/       # results.json (gitignored)

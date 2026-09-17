@@ -26,7 +26,7 @@ Deliver via a cloud-agent branch and PR into `master` / default branch:
 2. **README polish**
    - Clone URL: `https://github.com/carlok/slop-audit`
    - Clear install → run → outputs story
-   - Explicit note that the import package remains `text_audit` until Phase 2
+   - Explicit note that the import package remains `slop_audit` until Phase 2
    - Remove leftover “GitHub later / setup out of scope” / local-only path framing that contradicts the live private repo
 3. **pyproject.toml metadata** — description, authors/urls as appropriate, `readme = "README.md"` if supported by the layout
 4. **CHANGELOG.md** — `0.1.0` = harness as currently shipped on GitHub
@@ -42,13 +42,13 @@ Deliver via a cloud-agent branch and PR into `master` / default branch:
 
 ### Phase 2 — Code hygiene (after Phase 1 merges)
 
-1. Rename import package **`text_audit` → `slop_audit`** (package dir, imports, tests, `run_audit.py`, docs references)
+1. Rename import package **`slop_audit` → `slop_audit`** (package dir, imports, tests, `run_audit.py`, docs references)
 2. Wire live **independent-agreement / corroborated findings** into the report (close the known gap: helper exists but live runs do not yet feed shared finding labels)
 3. Drop stale worktree / path wording in matrix or install docs that still assume `.worktrees/feat-text-audit-harness`
 
 **Success criteria (Phase 2):**
 
-- `import slop_audit` works; no remaining `text_audit` import paths in code/tests (docs history may mention the old name once)
+- `import slop_audit` works; no remaining `slop_audit` import paths in code/tests (docs history may mention the old name once)
 - Report shows corroborated / independent-agreement content when tools share labels; empty only when nothing corroborates
 - Tests green including any new agreement tests
 

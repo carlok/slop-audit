@@ -1,5 +1,5 @@
-from text_audit.models import ToolResult, ToolStatus, CATEGORY_SLOP
-from text_audit.scoring_slop import compute_slop_index, band_for, SLOP_WEIGHTS
+from slop_audit.models import ToolResult, ToolStatus, CATEGORY_SLOP
+from slop_audit.scoring_slop import compute_slop_index, band_for, SLOP_WEIGHTS
 
 
 def _ok(tool, score):

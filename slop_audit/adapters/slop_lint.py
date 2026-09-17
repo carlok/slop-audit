@@ -1,36 +1,46 @@
-"""Adapter G: proselint."""
+"""Adapter E: slop-lint (invoke via node; .bin symlink skips main)."""
 from __future__ import annotations
 
 import json
+import re
+import shutil
 from pathlib import Path
 from typing import Any
 
-from text_audit.adapters.base import ROOT, run_cmd, write_raw
-from text_audit.models import CATEGORY_PROSE, ToolResult, ToolStatus
-from text_audit.normalize import normalize_from_counts
+from slop_audit.adapters.base import ROOT, run_cmd, write_raw
+from slop_audit.models import CATEGORY_SLOP, ToolResult, ToolStatus
+from slop_audit.normalize import normalize_from_counts
 
-TOOL = "proselint"
-VERSION = "0.16.0"
-_BIN = ROOT / "envs" / "slop" / "bin" / "proselint"
+TOOL = "slop_lint"
+VERSION = "0.6.0"
+_SCRIPT = ROOT / "tools" / "node_modules" / "slop-lint" / "slop-lint.mjs"
+
+_SUMMARY = re.compile(
+    r"(\d+)\s+em-dash failure\(s\),\s+(\d+)\s+warning\(s\)",
+    re.IGNORECASE,
+)
+_FAIL_LINE = re.compile(r"^\s+\d+:\s+✗")
+_WARN_LINE = re.compile(r"^\s+\d+:\s+⚠")
 
 
 def parse_stdout(stdout: str, word_count: int) -> dict[str, Any]:
-    """Parse proselint -o json; each diagnostic → warning."""
-    data = json.loads(stdout)
-    diagnostics: list[dict[str, Any]] = []
-    result = data.get("result") or {}
-    if isinstance(result, dict):
-        for _uri, block in result.items():
-            if isinstance(block, dict):
-                diags = block.get("diagnostics") or []
-                if isinstance(diags, list):
-                    diagnostics.extend(d for d in diags if isinstance(d, dict))
-    warnings = len(diagnostics)
-    errors = 0
+    """Parse slop-lint text; em-dash failures → errors, ⚠ → warnings."""
+    errors = warnings = 0
+    m = _SUMMARY.search(stdout)
+    if m:
+        errors = int(m.group(1))
+        warnings = int(m.group(2))
+    else:
+        for line in stdout.splitlines():
+            if _FAIL_LINE.match(line):
+                errors += 1
+            elif _WARN_LINE.match(line):
+                warnings += 1
+
     info = 0
     normalized = normalize_from_counts(errors, warnings, info, word_count)
     return {
-        "native": data,
+        "native": {"stdout": stdout, "em_dash_failures": errors, "warnings": warnings},
         "errors": errors,
         "warnings": warnings,
         "info": info,
@@ -39,12 +49,16 @@ def parse_stdout(stdout: str, word_count: int) -> dict[str, Any]:
     }
 
 
+def _node() -> str | None:
+    return shutil.which("node")
+
+
 def _not_run(reason: str, commands: list[str]) -> ToolResult:
     return ToolResult(
         tool=TOOL,
         status=ToolStatus.NOT_RUN,
         version=VERSION,
-        category=CATEGORY_PROSE,
+        category=CATEGORY_SLOP,
         commands=commands,
         raw_dir=f"raw/{TOOL}",
         native=None,
@@ -59,22 +73,26 @@ def _not_run(reason: str, commands: list[str]) -> ToolResult:
 
 def run(input_path: Path, word_count: int) -> ToolResult:
     path = Path(input_path)
-    commands = [str(_BIN), "check", "-o", "json", str(path)]
-    if not _BIN.is_file():
-        return _not_run(f"missing binary: {_BIN}", commands)
+    node = _node()
+    commands = [node or "node", str(_SCRIPT), str(path)]
+    if node is None:
+        return _not_run("missing binary: node", commands)
+    if not _SCRIPT.is_file():
+        return _not_run(f"missing module: {_SCRIPT}", commands)
 
     proc = run_cmd(commands, timeout=120)
     write_raw(TOOL, "stdout.txt", proc["stdout"])
     write_raw(TOOL, "stderr.txt", proc["stderr"])
     write_raw(TOOL, "returncode.txt", str(proc["returncode"]))
 
-    stdout = (proc["stdout"] or "").strip()
-    if not stdout:
+    stdout = proc["stdout"] or ""
+    # exit 1 = em-dash failures present; still parseable
+    if proc["returncode"] not in (0, 1) and not stdout.strip():
         return ToolResult(
             tool=TOOL,
             status=ToolStatus.ERROR,
             version=VERSION,
-            category=CATEGORY_PROSE,
+            category=CATEGORY_SLOP,
             commands=commands,
             raw_dir=f"raw/{TOOL}",
             native={"returncode": proc["returncode"]},
@@ -83,18 +101,17 @@ def run(input_path: Path, word_count: int) -> ToolResult:
             errors=0,
             warnings=0,
             info=0,
-            reason=f"empty stdout (rc={proc['returncode']}): {(proc['stderr'] or '')[:300]}",
+            reason=f"slop-lint rc={proc['returncode']}: {(proc['stderr'] or '')[:300]}",
         )
 
     try:
         parsed = parse_stdout(stdout, word_count)
-    except (json.JSONDecodeError, TypeError, ValueError, KeyError) as e:
-        write_raw(TOOL, "parse_error.txt", f"{type(e).__name__}: {e}\n{stdout[:2000]}")
+    except (TypeError, ValueError) as e:
         return ToolResult(
             tool=TOOL,
             status=ToolStatus.ERROR,
             version=VERSION,
-            category=CATEGORY_PROSE,
+            category=CATEGORY_SLOP,
             commands=commands,
             raw_dir=f"raw/{TOOL}",
             native=None,
@@ -111,7 +128,7 @@ def run(input_path: Path, word_count: int) -> ToolResult:
         tool=TOOL,
         status=ToolStatus.OK,
         version=VERSION,
-        category=CATEGORY_PROSE,
+        category=CATEGORY_SLOP,
         commands=commands,
         raw_dir=f"raw/{TOOL}",
         native=parsed["native"],

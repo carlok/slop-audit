@@ -1,4 +1,4 @@
-from text_audit.models import ToolResult, ToolStatus, CATEGORY_SLOP
+from slop_audit.models import ToolResult, ToolStatus, CATEGORY_SLOP
 
 def test_not_run_result_has_no_normalized_score():
     r = ToolResult(

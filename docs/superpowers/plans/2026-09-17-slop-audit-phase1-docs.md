@@ -4,7 +4,7 @@
 
 **Goal:** Make private `carlok/slop-audit` look finished and cloneable: MIT LICENSE, polished README, pyproject metadata, CHANGELOG 0.1.0, light docs cleanup — without renaming the Python package.
 
-**Architecture:** Docs/metadata-only PR. No adapter or scoring behavior changes. Import package stays `text_audit` until Phase 2.
+**Architecture:** Docs/metadata-only PR. No adapter or scoring behavior changes. Import package stays `slop_audit` until Phase 2.
 
 **Tech Stack:** Markdown, MIT license text, PEP 621 `pyproject.toml`, existing pytest suite.
 
@@ -13,7 +13,7 @@
 - Repo: `https://github.com/carlok/slop-audit` (private)
 - Spec: `docs/superpowers/specs/2026-09-17-slop-audit-brush-up-design.md`
 - LICENSE copyright: **Carlo Perassi**, year **2026**, MIT
-- Do **not** rename `text_audit` → `slop_audit` in this PR
+- Do **not** rename `slop_audit` → `slop_audit` in this PR
 - Do **not** commit `input/target.txt`, `report/`, or user sample prose
 - Do **not** add heavy BERT-class detectors
 - Epistemic rules unchanged
@@ -56,7 +56,7 @@
   - Title `slop-audit`
   - Clone: `git clone https://github.com/carlok/slop-audit.git`
   - Install → put text in `input/target.txt` → `run_audit.py` → outputs
-  - Explicit note: Python import package is still `text_audit` until Phase 2
+  - Explicit note: Python import package is still `slop_audit` until Phase 2
   - Keep epistemic rules, layout, out-of-scope (hosted APIs / rewrite / authorship claims)
   - Mention LICENSE (MIT)
   - Remove or fix wording that says GitHub publication is out of scope or that the harness only lives on `/workspace/text-audit/`

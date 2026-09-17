@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from text_audit.models import ToolResult, ToolStatus
-from text_audit.weights import renormalize
+from slop_audit.models import ToolResult, ToolStatus
+from slop_audit.weights import renormalize
 
 FAMILY_WEIGHTS: dict[str, float] = {
     "deberta": 0.40,

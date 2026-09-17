@@ -1,55 +1,33 @@
-"""Adapter F: Vale (write-good package + custom Slop rules)."""
+"""Adapter H: write-good (npm)."""
 from __future__ import annotations
 
 import json
+import re
+import shutil
 from pathlib import Path
 from typing import Any
 
-from text_audit.adapters.base import ROOT, run_cmd, write_raw
-from text_audit.models import CATEGORY_PROSE, ToolResult, ToolStatus
-from text_audit.normalize import normalize_from_counts
+from slop_audit.adapters.base import ROOT, run_cmd, write_raw
+from slop_audit.models import CATEGORY_PROSE, ToolResult, ToolStatus
+from slop_audit.normalize import normalize_from_counts
 
-TOOL = "vale"
-VERSION = "3.21.0"
-_BIN = ROOT / "tools" / "vale" / "vale"
-_CONFIG = ROOT / "vale" / ".vale.ini"
-_STYLE_WG = ROOT / "vale" / "styles" / "write-good"
+TOOL = "write_good"
+VERSION = "1.0.8"
+_BIN = ROOT / "tools" / "node_modules" / ".bin" / "write-good"
 
-_SEV = {
-    "error": "errors",
-    "warning": "warnings",
-    "warn": "warnings",
-    "suggestion": "info",
-    "note": "info",
-    "info": "info",
-}
+# path:line:col:message
+_LINE = re.compile(r"^[^:\n]+:\d+:\d+:.+")
 
 
 def parse_stdout(stdout: str, word_count: int) -> dict[str, Any]:
-    """Parse Vale --output=JSON into severity counts + normalized score."""
-    data = json.loads(stdout) if stdout.strip() else {}
-    if not isinstance(data, dict):
-        data = {}
-    errors = warnings = info = 0
-    alerts: list[dict[str, Any]] = []
-    for _path, items in data.items():
-        if not isinstance(items, list):
-            continue
-        for item in items:
-            if not isinstance(item, dict):
-                continue
-            alerts.append(item)
-            sev = str(item.get("Severity") or "warning").lower()
-            bucket = _SEV.get(sev, "warnings")
-            if bucket == "errors":
-                errors += 1
-            elif bucket == "warnings":
-                warnings += 1
-            else:
-                info += 1
+    """Parse write-good --parse lines; each finding → warning."""
+    findings = [ln for ln in stdout.splitlines() if _LINE.match(ln.strip())]
+    warnings = len(findings)
+    errors = 0
+    info = 0
     normalized = normalize_from_counts(errors, warnings, info, word_count)
     return {
-        "native": {"alerts": alerts, "by_file": data},
+        "native": {"stdout": stdout, "findings": findings},
         "errors": errors,
         "warnings": warnings,
         "info": info,
@@ -78,20 +56,13 @@ def _not_run(reason: str, commands: list[str]) -> ToolResult:
 
 def run(input_path: Path, word_count: int) -> ToolResult:
     path = Path(input_path)
-    commands = [
-        str(_BIN),
-        f"--config={_CONFIG}",
-        "--output=JSON",
-        str(path),
-    ]
-    if not _BIN.is_file():
+    bin_path = _BIN if _BIN.is_file() else None
+    if bin_path is None:
+        which = shutil.which("write-good")
+        bin_path = Path(which) if which else None
+    commands = [str(bin_path or _BIN), "--parse", str(path)]
+    if bin_path is None or not Path(bin_path).is_file():
         return _not_run(f"missing binary: {_BIN}", commands)
-    if not _CONFIG.is_file():
-        return _not_run(f"missing config: {_CONFIG}", commands)
-    if not _STYLE_WG.is_dir():
-        return _not_run(
-            f"missing write-good styles (run vale sync): {_STYLE_WG}", commands
-        )
 
     proc = run_cmd(commands, timeout=120)
     write_raw(TOOL, "stdout.txt", proc["stdout"])
@@ -99,8 +70,9 @@ def run(input_path: Path, word_count: int) -> ToolResult:
     write_raw(TOOL, "returncode.txt", str(proc["returncode"]))
 
     stdout = proc["stdout"] or ""
-    # Vale exits non-zero when alerts present; empty {} is still valid
-    if proc["returncode"] not in (0, 1) and not stdout.strip():
+    # write-good --parse exits non-zero when findings exist (0/1/255).
+    # Hard failures often emit stderr only — treat empty stdout + bad rc as ERROR.
+    if proc["returncode"] not in (0, 1, 255) and not stdout.strip():
         return ToolResult(
             tool=TOOL,
             status=ToolStatus.ERROR,
@@ -108,19 +80,18 @@ def run(input_path: Path, word_count: int) -> ToolResult:
             category=CATEGORY_PROSE,
             commands=commands,
             raw_dir=f"raw/{TOOL}",
-            native={"returncode": proc["returncode"]},
+            native={"returncode": proc["returncode"], "stderr": (proc["stderr"] or "")[:500]},
             normalized_score=None,
             findings_count=0,
             errors=0,
             warnings=0,
             info=0,
-            reason=f"vale rc={proc['returncode']}: {(proc['stderr'] or '')[:300]}",
+            reason=f"write-good rc={proc['returncode']}: {(proc['stderr'] or '')[:300]}",
         )
 
     try:
-        parsed = parse_stdout(stdout if stdout.strip() else "{}", word_count)
-    except (json.JSONDecodeError, TypeError, ValueError) as e:
-        write_raw(TOOL, "parse_error.txt", f"{type(e).__name__}: {e}\n{stdout[:2000]}")
+        parsed = parse_stdout(stdout, word_count)
+    except (TypeError, ValueError) as e:
         return ToolResult(
             tool=TOOL,
             status=ToolStatus.ERROR,

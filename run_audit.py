@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from text_audit.runner import run_audit  # noqa: E402
+from slop_audit.runner import run_audit  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:

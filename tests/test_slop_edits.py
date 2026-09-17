@@ -1,5 +1,5 @@
-from text_audit.models import ToolResult, ToolStatus, CATEGORY_SLOP, CATEGORY_PROSE, CATEGORY_AI
-from text_audit.slop_edits import collect_slop_edit_suggestions
+from slop_audit.models import ToolResult, ToolStatus, CATEGORY_SLOP, CATEGORY_PROSE, CATEGORY_AI
+from slop_audit.slop_edits import collect_slop_edit_suggestions
 
 
 def _ok(tool, category, native):

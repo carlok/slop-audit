@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from contextlib import ExitStack
 from pathlib import Path
 from unittest import mock
 
@@ -13,6 +14,14 @@ from text_audit.models import CATEGORY_AI, ToolStatus
 from text_audit.scoring_ai import TOOL_FAMILY
 
 FIX = ROOT / "tests" / "fixtures" / "short.txt"
+
+
+def _fake_installed_path() -> mock.MagicMock:
+    """Path stand-in so adapters pass venv/binary existence checks in unit tests."""
+    p = mock.MagicMock()
+    p.is_file.return_value = True
+    p.is_dir.return_value = True
+    return p
 
 AI_DETECT_JSON = """\
 {
@@ -135,9 +144,22 @@ def test_heavy_adapters_not_run_when_mem_low(mod_name, tool):
     import importlib
 
     mod = importlib.import_module(mod_name)
-    with mock.patch.object(mod, "probe_import", return_value=(True, "ok")):
-        with mock.patch.object(mod, "memory_gate", return_value="insufficient memory for mock"):
-            r = mod.run(FIX, word_count=10)
+    fake = _fake_installed_path()
+    with ExitStack() as stack:
+        stack.enter_context(mock.patch.object(mod, "_PY", fake))
+        stack.enter_context(
+            mock.patch.object(mod, "probe_import", return_value=(True, "ok"))
+        )
+        stack.enter_context(
+            mock.patch.object(
+                mod, "memory_gate", return_value="insufficient memory for mock"
+            )
+        )
+        stack.enter_context(mock.patch.object(mod, "_CLONE", fake))
+        if tool == "fastdetectgpt":
+            stack.enter_context(mock.patch.object(mod, "_SCRIPTS", fake))
+            stack.enter_context(mock.patch.object(mod, "_REF", fake))
+        r = mod.run(FIX, word_count=10)
     assert r.tool == tool
     assert r.category == CATEGORY_AI
     assert r.status == ToolStatus.NOT_RUN
@@ -153,11 +175,13 @@ def test_ai_detect_mocked_ok_path():
         "stdout": AI_DETECT_JSON,
         "stderr": "",
     }
-    with mock.patch.object(ad, "probe_import", return_value=(True, "1.0.0")):
-        with mock.patch.object(ad, "_choose_model", return_value=("desklib", "")):
-            with mock.patch.object(ad, "run_cmd", return_value=fake_proc):
-                with mock.patch.object(ad, "write_raw"):
-                    r = ad.run(FIX, word_count=10)
+    fake = _fake_installed_path()
+    with mock.patch.object(ad, "_PY", fake), mock.patch.object(ad, "_BIN", fake):
+        with mock.patch.object(ad, "probe_import", return_value=(True, "1.0.0")):
+            with mock.patch.object(ad, "_choose_model", return_value=("desklib", "")):
+                with mock.patch.object(ad, "run_cmd", return_value=fake_proc):
+                    with mock.patch.object(ad, "write_raw"):
+                        r = ad.run(FIX, word_count=10)
     assert r.status == ToolStatus.OK
     assert r.category == CATEGORY_AI
     assert r.normalized_score == pytest.approx(72.5)
@@ -168,11 +192,13 @@ def test_clarity_mocked_ok_path():
     from text_audit.adapters import clarity_adapter as ca
 
     fake_proc = {"returncode": 0, "stdout": CLARITY_JSON, "stderr": ""}
-    with mock.patch.object(ca, "probe_import", return_value=(True, "0.2.0")):
-        with mock.patch.object(ca, "_choose_mode", return_value=("binoculars", "")):
-            with mock.patch.object(ca, "run_cmd", return_value=fake_proc):
-                with mock.patch.object(ca, "write_raw"):
-                    r = ca.run(FIX, word_count=10)
+    fake = _fake_installed_path()
+    with mock.patch.object(ca, "_PY", fake), mock.patch.object(ca, "_BIN", fake):
+        with mock.patch.object(ca, "probe_import", return_value=(True, "0.2.0")):
+            with mock.patch.object(ca, "_choose_mode", return_value=("binoculars", "")):
+                with mock.patch.object(ca, "run_cmd", return_value=fake_proc):
+                    with mock.patch.object(ca, "write_raw"):
+                        r = ca.run(FIX, word_count=10)
     assert r.status == ToolStatus.OK
     assert r.category == CATEGORY_AI
     assert 0.0 <= r.normalized_score <= 100.0

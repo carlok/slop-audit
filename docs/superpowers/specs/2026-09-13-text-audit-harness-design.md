@@ -3,6 +3,8 @@
 Date: 2026-09-13  
 Status: approved for implementation (pending user review of this written spec)
 
+> **Superseded (2026-09-17):** The harness is published on private GitHub as [`carlok/slop-audit`](https://github.com/carlok/slop-audit). SlopPer-style `/workspace/text-audit/` paths and “GitHub repo may come later / out of scope for setup” below reflect the original 2026-09-13 brief only — not current repo policy.
+
 ## Goal
 
 Build a reproducible, local-only **operating system** that runs a multi-tool audit of supplied prose for:

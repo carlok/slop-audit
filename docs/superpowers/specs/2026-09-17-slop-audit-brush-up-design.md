@@ -1,7 +1,7 @@
 # slop-audit brush-up — design
 
 Date: 2026-09-17  
-Status: draft for user review (Phase 1 and Phase 2 outlines approved in chat)
+Status: approved (2026-09-17); MIT author line: Carlo Perassi / 2026; Phase 1 next
 
 ## Goal
 
@@ -69,5 +69,5 @@ Separate branch (name TBD, e.g. `feat/heavy-detectors`):
 
 ## Open questions (none blocking Phase 1)
 
-- Exact license author line (default: Carlo Perassi / year 2026)
+- ~~Exact license author line~~ → **Carlo Perassi / 2026** (approved)
 - Heavy-detector branch contents and model list — deferred until after Phase 2

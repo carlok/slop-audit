@@ -1,5 +1,5 @@
 from pathlib import Path
-from text_audit.input_stats import compute_input_stats
+from slop_audit.input_stats import compute_input_stats
 
 FIX = Path(__file__).parent / "fixtures" / "short.txt"
 

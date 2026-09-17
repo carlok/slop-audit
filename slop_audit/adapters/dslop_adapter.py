@@ -1,56 +1,46 @@
-"""Adapter E: slop-lint (invoke via node; .bin symlink skips main)."""
+"""Adapter B: dslop."""
 from __future__ import annotations
 
 import json
 import re
-import shutil
 from pathlib import Path
 from typing import Any
 
-from text_audit.adapters.base import ROOT, run_cmd, write_raw
-from text_audit.models import CATEGORY_SLOP, ToolResult, ToolStatus
-from text_audit.normalize import normalize_from_counts
+from slop_audit.adapters.base import ROOT, run_cmd, write_raw
+from slop_audit.models import CATEGORY_SLOP, ToolResult, ToolStatus
+from slop_audit.normalize import normalize_from_counts
 
-TOOL = "slop_lint"
-VERSION = "0.6.0"
-_SCRIPT = ROOT / "tools" / "node_modules" / "slop-lint" / "slop-lint.mjs"
+TOOL = "dslop"
+VERSION = "0.2.2"
+_BIN = ROOT / "envs" / "slop" / "bin" / "dslop"
 
-_SUMMARY = re.compile(
-    r"(\d+)\s+em-dash failure\(s\),\s+(\d+)\s+warning\(s\)",
-    re.IGNORECASE,
-)
-_FAIL_LINE = re.compile(r"^\s+\d+:\s+✗")
-_WARN_LINE = re.compile(r"^\s+\d+:\s+⚠")
+_VIOLATION_LINE = re.compile(r"^\s+\S+:\d+:\d+\s+\S+")
+_SUMMARY = re.compile(r"dslop:\s+(\d+)\s+violation", re.IGNORECASE)
 
 
 def parse_stdout(stdout: str, word_count: int) -> dict[str, Any]:
-    """Parse slop-lint text; em-dash failures → errors, ⚠ → warnings."""
-    errors = warnings = 0
-    m = _SUMMARY.search(stdout)
-    if m:
-        errors = int(m.group(1))
-        warnings = int(m.group(2))
+    """Parse dslop text output; violations → warnings (no native 0–100)."""
+    violations: list[str] = []
+    for line in stdout.splitlines():
+        if _VIOLATION_LINE.match(line):
+            violations.append(line.strip())
+    if not violations:
+        m = _SUMMARY.search(stdout)
+        n = int(m.group(1)) if m else 0
+        warnings = n
     else:
-        for line in stdout.splitlines():
-            if _FAIL_LINE.match(line):
-                errors += 1
-            elif _WARN_LINE.match(line):
-                warnings += 1
-
+        warnings = len(violations)
+    errors = 0
     info = 0
     normalized = normalize_from_counts(errors, warnings, info, word_count)
     return {
-        "native": {"stdout": stdout, "em_dash_failures": errors, "warnings": warnings},
+        "native": {"stdout": stdout, "violations": violations, "violation_count": warnings},
         "errors": errors,
         "warnings": warnings,
         "info": info,
         "findings_count": errors + warnings + info,
         "normalized_score": normalized,
     }
-
-
-def _node() -> str | None:
-    return shutil.which("node")
 
 
 def _not_run(reason: str, commands: list[str]) -> ToolResult:
@@ -73,21 +63,19 @@ def _not_run(reason: str, commands: list[str]) -> ToolResult:
 
 def run(input_path: Path, word_count: int) -> ToolResult:
     path = Path(input_path)
-    node = _node()
-    commands = [node or "node", str(_SCRIPT), str(path)]
-    if node is None:
-        return _not_run("missing binary: node", commands)
-    if not _SCRIPT.is_file():
-        return _not_run(f"missing module: {_SCRIPT}", commands)
+    commands = [str(_BIN), str(path)]
+    if not _BIN.is_file():
+        return _not_run(f"missing binary: {_BIN}", commands)
 
     proc = run_cmd(commands, timeout=120)
     write_raw(TOOL, "stdout.txt", proc["stdout"])
     write_raw(TOOL, "stderr.txt", proc["stderr"])
     write_raw(TOOL, "returncode.txt", str(proc["returncode"]))
 
+    # dslop exits non-zero when violations found; still OK if we got parseable output
     stdout = proc["stdout"] or ""
-    # exit 1 = em-dash failures present; still parseable
-    if proc["returncode"] not in (0, 1) and not stdout.strip():
+    stderr = proc["stderr"] or ""
+    if not stdout.strip() and proc["returncode"] not in (0, 1):
         return ToolResult(
             tool=TOOL,
             status=ToolStatus.ERROR,
@@ -95,13 +83,13 @@ def run(input_path: Path, word_count: int) -> ToolResult:
             category=CATEGORY_SLOP,
             commands=commands,
             raw_dir=f"raw/{TOOL}",
-            native={"returncode": proc["returncode"]},
+            native={"returncode": proc["returncode"], "stderr": stderr},
             normalized_score=None,
             findings_count=0,
             errors=0,
             warnings=0,
             info=0,
-            reason=f"slop-lint rc={proc['returncode']}: {(proc['stderr'] or '')[:300]}",
+            reason=f"dslop failed rc={proc['returncode']}: {stderr[:300]}",
         )
 
     try:

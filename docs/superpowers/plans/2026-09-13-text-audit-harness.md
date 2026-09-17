@@ -29,8 +29,8 @@
 text-audit/
   run_audit.py
   README.md
-  pyproject.toml                 # pytest + package metadata for text_audit
-  text_audit/
+  pyproject.toml                 # pytest + package metadata for slop_audit
+  slop_audit/
     __init__.py
     models.py                    # ToolResult, InputStats, EnvironmentInfo
     logging_util.py              # append-only install/run logs
@@ -87,8 +87,8 @@ text-audit/
 ### Task 1: Core models and adapter result contract
 
 **Files:**
-- Create: `text_audit/__init__.py`
-- Create: `text_audit/models.py`
+- Create: `slop_audit/__init__.py`
+- Create: `slop_audit/models.py`
 - Create: `tests/test_models.py`
 - Create: `pyproject.toml`
 
@@ -99,7 +99,7 @@ text-audit/
 
 ```python
 # tests/test_models.py
-from text_audit.models import ToolResult, ToolStatus, CATEGORY_SLOP
+from slop_audit.models import ToolResult, ToolStatus, CATEGORY_SLOP
 
 def test_not_run_result_has_no_normalized_score():
     r = ToolResult(
@@ -147,10 +147,10 @@ testpaths = ["tests"]
 ```
 
 ```python
-# text_audit/__init__.py
+# slop_audit/__init__.py
 """Local multi-tool text audit harness."""
 
-# text_audit/models.py
+# slop_audit/models.py
 from __future__ import annotations
 from dataclasses import dataclass, field, asdict
 from enum import Enum
@@ -198,7 +198,7 @@ Expected: PASS
 
 ```bash
 cd /workspace/text-audit
-git add pyproject.toml text_audit/__init__.py text_audit/models.py tests/test_models.py
+git add pyproject.toml slop_audit/__init__.py slop_audit/models.py tests/test_models.py
 git commit -m "feat: add ToolResult contract and project metadata"
 ```
 
@@ -207,7 +207,7 @@ git commit -m "feat: add ToolResult contract and project metadata"
 ### Task 2: Normalization heuristic
 
 **Files:**
-- Create: `text_audit/normalize.py`
+- Create: `slop_audit/normalize.py`
 - Create: `tests/test_normalize.py`
 
 **Interfaces:**
@@ -219,7 +219,7 @@ git commit -m "feat: add ToolResult contract and project metadata"
 ```python
 # tests/test_normalize.py
 import math
-from text_audit.normalize import weighted_findings, density, normalized_score, normalize_from_counts
+from slop_audit.normalize import weighted_findings, density, normalized_score, normalize_from_counts
 
 def test_weighted_findings():
     assert weighted_findings(1, 2, 3) == 3*1 + 2*2 + 1*3
@@ -242,7 +242,7 @@ Expected: FAIL import error
 - [ ] **Step 3: Write minimal implementation**
 
 ```python
-# text_audit/normalize.py
+# slop_audit/normalize.py
 from __future__ import annotations
 import math
 
@@ -269,7 +269,7 @@ Expected: PASS
 - [ ] **Step 5: Commit**
 
 ```bash
-git add text_audit/normalize.py tests/test_normalize.py
+git add slop_audit/normalize.py tests/test_normalize.py
 git commit -m "feat: add severity-density normalization heuristic"
 ```
 
@@ -278,7 +278,7 @@ git commit -m "feat: add severity-density normalization heuristic"
 ### Task 3: Weight renormalization for missing tools
 
 **Files:**
-- Create: `text_audit/weights.py`
+- Create: `slop_audit/weights.py`
 - Create: `tests/test_weights.py`
 
 **Interfaces:**
@@ -288,7 +288,7 @@ git commit -m "feat: add severity-density normalization heuristic"
 
 ```python
 # tests/test_weights.py
-from text_audit.weights import renormalize
+from slop_audit.weights import renormalize
 
 def test_renormalize_drops_missing_and_rescales():
     w = {"a": 0.25, "b": 0.25, "c": 0.50}
@@ -310,7 +310,7 @@ Expected: FAIL
 - [ ] **Step 3: Write minimal implementation**
 
 ```python
-# text_audit/weights.py
+# slop_audit/weights.py
 from __future__ import annotations
 
 def renormalize(weights: dict[str, float], available: set[str]) -> dict[str, float]:
@@ -329,7 +329,7 @@ Expected: PASS
 - [ ] **Step 5: Commit**
 
 ```bash
-git add text_audit/weights.py tests/test_weights.py
+git add slop_audit/weights.py tests/test_weights.py
 git commit -m "feat: renormalize ensemble weights when tools missing"
 ```
 
@@ -338,7 +338,7 @@ git commit -m "feat: renormalize ensemble weights when tools missing"
 ### Task 4: Input statistics
 
 **Files:**
-- Create: `text_audit/input_stats.py`
+- Create: `slop_audit/input_stats.py`
 - Create: `tests/test_input_stats.py`
 - Create: `tests/fixtures/short.txt`
 
@@ -357,7 +357,7 @@ Second paragraph here.
 ```python
 # tests/test_input_stats.py
 from pathlib import Path
-from text_audit.input_stats import compute_input_stats
+from slop_audit.input_stats import compute_input_stats
 
 FIX = Path(__file__).parent / "fixtures" / "short.txt"
 
@@ -378,7 +378,7 @@ Expected: FAIL
 - [ ] **Step 3: Write minimal implementation**
 
 ```python
-# text_audit/input_stats.py
+# slop_audit/input_stats.py
 from __future__ import annotations
 import hashlib
 import re
@@ -429,7 +429,7 @@ Expected: PASS
 - [ ] **Step 5: Commit**
 
 ```bash
-git add text_audit/input_stats.py tests/test_input_stats.py tests/fixtures/short.txt
+git add slop_audit/input_stats.py tests/test_input_stats.py tests/fixtures/short.txt
 git commit -m "feat: compute input SHA and basic text statistics"
 ```
 
@@ -438,8 +438,8 @@ git commit -m "feat: compute input SHA and basic text statistics"
 ### Task 5: Logging helpers and environment inspection
 
 **Files:**
-- Create: `text_audit/logging_util.py`
-- Create: `text_audit/env_inspect.py`
+- Create: `slop_audit/logging_util.py`
+- Create: `slop_audit/env_inspect.py`
 - Create: `scripts/inspect_env.py`
 - Create: `tests/test_env_inspect.py`
 
@@ -450,7 +450,7 @@ git commit -m "feat: compute input SHA and basic text statistics"
 
 ```python
 # tests/test_env_inspect.py
-from text_audit.env_inspect import inspect_environment
+from slop_audit.env_inspect import inspect_environment
 
 def test_inspect_environment_has_required_keys():
     env = inspect_environment()
@@ -478,7 +478,7 @@ Also run: `python scripts/inspect_env.py` → creates `logs/environment.json`
 - [ ] **Step 5: Commit**
 
 ```bash
-git add text_audit/logging_util.py text_audit/env_inspect.py scripts/inspect_env.py tests/test_env_inspect.py logs/.gitkeep
+git add slop_audit/logging_util.py slop_audit/env_inspect.py scripts/inspect_env.py tests/test_env_inspect.py logs/.gitkeep
 git commit -m "feat: environment inspection and append-only logs"
 ```
 
@@ -487,8 +487,8 @@ git commit -m "feat: environment inspection and append-only logs"
 ### Task 6: Adapter base helper and registry stub
 
 **Files:**
-- Create: `text_audit/adapters/__init__.py`
-- Create: `text_audit/adapters/base.py`
+- Create: `slop_audit/adapters/__init__.py`
+- Create: `slop_audit/adapters/base.py`
 - Create: `tests/test_adapter_base.py`
 
 **Interfaces:**
@@ -497,7 +497,7 @@ git commit -m "feat: environment inspection and append-only logs"
 - [ ] **Step 1: Write failing test for run_cmd success and failure capture**
 
 ```python
-from text_audit.adapters.base import run_cmd
+from slop_audit.adapters.base import run_cmd
 
 def test_run_cmd_captures_failure_without_raising():
     result = run_cmd(["bash", "-c", "echo nope >&2; exit 7"])
@@ -518,8 +518,8 @@ def test_run_cmd_captures_failure_without_raising():
 ### Task 7: Slop Index and agreement scoring
 
 **Files:**
-- Create: `text_audit/scoring_slop.py`
-- Create: `text_audit/agreement.py`
+- Create: `slop_audit/scoring_slop.py`
+- Create: `slop_audit/agreement.py`
 - Create: `tests/test_scoring_slop.py`
 - Create: `tests/test_agreement.py`
 
@@ -531,8 +531,8 @@ Prose tools (`proselint`, `write_good`, `harper`, `languagetool`) combine into s
 - [ ] **Step 1: Failing tests for renormalized index and bands**
 
 ```python
-from text_audit.models import ToolResult, ToolStatus, CATEGORY_SLOP
-from text_audit.scoring_slop import compute_slop_index, band_for
+from slop_audit.models import ToolResult, ToolStatus, CATEGORY_SLOP
+from slop_audit.scoring_slop import compute_slop_index, band_for
 
 def _ok(tool, score):
     return ToolResult(tool, ToolStatus.OK, "1", CATEGORY_SLOP, [], f"raw/{tool}", {"score": score}, score, 0,0,0,0, "", "")
@@ -559,7 +559,7 @@ Bands: `<25 LOW`, `<50 MODERATE`, `<75 HIGH`, else `VERY HIGH`.
 ### Task 8: AI-Likeness ensemble (family-aware)
 
 **Files:**
-- Create: `text_audit/scoring_ai.py`
+- Create: `slop_audit/scoring_ai.py`
 - Create: `tests/test_scoring_ai.py`
 
 **Interfaces:**
@@ -580,7 +580,7 @@ def test_binoculars_family_not_double_counted():
 ### Task 9: Report writer
 
 **Files:**
-- Create: `text_audit/report.py`
+- Create: `slop_audit/report.py`
 - Create: `tests/test_report.py`
 
 **Interfaces:**
@@ -596,7 +596,7 @@ Human editorial section during smoke/setup: state `deferred until real user text
 ### Task 10: Runner orchestration + restartability
 
 **Files:**
-- Create: `text_audit/runner.py`
+- Create: `slop_audit/runner.py`
 - Create: `run_audit.py`
 - Create: `tests/test_runner_restart.py`
 
@@ -636,12 +636,12 @@ Install targets (record exact commands in log):
 ### Task 12: Deterministic slop adapters (A–E)
 
 **Files:**
-- Create: `text_audit/adapters/slopscore.py`
-- Create: `text_audit/adapters/dslop_adapter.py`
-- Create: `text_audit/adapters/slopsift.py`
-- Create: `text_audit/adapters/ai_slop_detect.py`
-- Create: `text_audit/adapters/slop_lint.py`
-- Modify: `text_audit/adapters/__init__.py` to register them
+- Create: `slop_audit/adapters/slopscore.py`
+- Create: `slop_audit/adapters/dslop_adapter.py`
+- Create: `slop_audit/adapters/slopsift.py`
+- Create: `slop_audit/adapters/ai_slop_detect.py`
+- Create: `slop_audit/adapters/slop_lint.py`
+- Modify: `slop_audit/adapters/__init__.py` to register them
 
 **Interfaces:**
 - Each exports `run(input_path: Path, word_count: int) -> ToolResult`
@@ -674,7 +674,7 @@ Stats adapter must compute textstat metrics + sentence length mean/median/stdev/
 ### Task 14: ML authorship adapters (K–N) best-effort
 
 **Files:**
-- Create: `text_audit/adapters/ai_detect.py`, `clarity_adapter.py`, `binoculars_adapter.py`, `fastdetectgpt_adapter.py`
+- Create: `slop_audit/adapters/ai_detect.py`, `clarity_adapter.py`, `binoculars_adapter.py`, `fastdetectgpt_adapter.py`
 - Modify: registry
 
 Each adapter:

@@ -1,4 +1,4 @@
-from text_audit.weights import renormalize
+from slop_audit.weights import renormalize
 
 def test_renormalize_drops_missing_and_rescales():
     w = {"a": 0.25, "b": 0.25, "c": 0.50}

@@ -8,8 +8,8 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from text_audit.adapters.base import ROOT, run_cmd, write_raw
-from text_audit.models import CATEGORY_STATS, ToolResult, ToolStatus
+from slop_audit.adapters.base import ROOT, run_cmd, write_raw
+from slop_audit.models import CATEGORY_STATS, ToolResult, ToolStatus
 
 TOOL = "stats"
 VERSION = "textstat+local"

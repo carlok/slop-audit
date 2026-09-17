@@ -1,4 +1,4 @@
-from text_audit.agreement import independent_agreement
+from slop_audit.agreement import independent_agreement
 
 
 def test_independent_agreement_counts_unique_tools():

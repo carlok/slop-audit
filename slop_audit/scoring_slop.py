@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from text_audit.models import ToolResult, ToolStatus
-from text_audit.weights import renormalize
+from slop_audit.models import ToolResult, ToolStatus
+from slop_audit.weights import renormalize
 
 SLOP_WEIGHTS: dict[str, float] = {
     "slopscore": 0.25,

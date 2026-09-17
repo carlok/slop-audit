@@ -1,5 +1,5 @@
 import math
-from text_audit.normalize import (
+from slop_audit.normalize import (
     weighted_findings,
     density,
     normalized_score,

@@ -8,7 +8,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from text_audit.models import CATEGORY_AI, CATEGORY_STATS, ToolResult, ToolStatus
+from slop_audit.models import CATEGORY_AI, CATEGORY_STATS, ToolResult, ToolStatus
 
 # Tools / categories that feed Slop Index (exclude AI authorship + stats).
 _SKIP_CATEGORIES = {CATEGORY_AI, CATEGORY_STATS}
@@ -295,6 +295,38 @@ def _from_slop_lint(tool: str, native: Any) -> list[dict[str, str]]:
     return items
 
 
+def _from_languagetool(tool: str, native: Any) -> list[dict[str, str]]:
+    items: list[dict[str, str]] = []
+    if not isinstance(native, dict):
+        return items
+    for m in native.get("matches") or []:
+        if not isinstance(m, dict):
+            continue
+        rule_obj = m.get("rule") or {}
+        rule = str(rule_obj.get("id") or rule_obj.get("description") or "languagetool")
+        message = str(m.get("message") or rule)
+        ctx = m.get("context")
+        quote = None
+        if isinstance(ctx, dict):
+            quote = ctx.get("text")
+        offset = m.get("offset")
+        length = m.get("length")
+        loc = None
+        if offset is not None and length is not None:
+            loc = f"offset {offset}+{length}"
+        if message:
+            items.append(
+                _item(
+                    tool=tool,
+                    rule=rule,
+                    message=message,
+                    quote=str(quote) if quote else None,
+                    location=loc,
+                )
+            )
+    return items
+
+
 _EXTRACTORS = {
     "vale": _from_vale,
     "write_good": _from_write_good,
@@ -305,7 +337,26 @@ _EXTRACTORS = {
     "slopsift": _from_slopsift,
     "slop_lint": _from_slop_lint,
     "harper": _from_vale,  # harper via Vale JSON alerts if present
+    "languagetool": _from_languagetool,
 }
+
+
+def collect_style_finding_items(tool_results: list) -> list[dict[str, str]]:
+    """Return style/slop/prose findings from OK tools (no cross-tool dedupe)."""
+    collected: list[dict[str, str]] = []
+    for r in tool_results or []:
+        if not _status_ok(r):
+            continue
+        tool, category, native = _fields(r)
+        if category in _SKIP_CATEGORIES:
+            continue
+        if tool == "stats":
+            continue
+        extractor = _EXTRACTORS.get(tool)
+        if extractor is None:
+            continue
+        collected.extend(extractor(tool, native))
+    return [item for item in collected if item.get("message")]
 
 
 def collect_slop_edit_suggestions(tool_results: list) -> list[dict[str, str]]:

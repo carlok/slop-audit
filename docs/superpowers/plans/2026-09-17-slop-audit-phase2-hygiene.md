@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Rename the import package `text_audit` → `slop_audit`, wire live independent-agreement / corroborated findings into reports, and drop stale worktree path wording.
+**Goal:** Rename the import package `slop_audit` → `slop_audit`, wire live independent-agreement / corroborated findings into reports, and drop stale worktree path wording.
 
 **Architecture:** Mechanical package rename with import/test updates; then a runner post-pass that extracts shared finding labels from OK tool natives into a phenomena map, feeds `independent_agreement()`, and populates the report’s corroborated section (today always empty). Docs catch up to the new import name.
 
@@ -20,22 +20,22 @@
 
 ---
 
-### Task 1: Rename package `text_audit` → `slop_audit`
+### Task 1: Rename package `slop_audit` → `slop_audit`
 
 **Files:**
-- Rename/move: `text_audit/` → `slop_audit/`
-- Modify: all imports in package, `run_audit.py`, `tests/**`, scripts/docs that teach `import text_audit`
-- Modify: `README.md` (remove “still text_audit until Phase 2”; say `slop_audit`)
+- Rename/move: `slop_audit/` → `slop_audit/`
+- Modify: all imports in package, `run_audit.py`, `tests/**`, scripts/docs that teach `import slop_audit`
+- Modify: `README.md` (remove “still slop_audit until Phase 2”; say `slop_audit`)
 - Modify: `CHANGELOG.md` — add Unreleased / 0.2.0 note for the rename
 
 **Interfaces:**
 - Consumes: current package layout
-- Produces: `import slop_audit` works; no remaining `text_audit` imports in code/tests
+- Produces: `import slop_audit` works; no remaining `slop_audit` imports in code/tests
 
-- [ ] **Step 1:** Rename directory; update every `from text_audit` / `import text_audit`
+- [ ] **Step 1:** Rename directory; update every `from slop_audit` / `import slop_audit`
 - [ ] **Step 2:** Update README / CHANGELOG / any install docs that mention the old import
 - [ ] **Step 3:** `pytest -q` green
-- [ ] **Step 4:** Commit `refactor: rename text_audit package to slop_audit`
+- [ ] **Step 4:** Commit `refactor: rename slop_audit package to slop_audit`
 
 ---
 
@@ -63,7 +63,7 @@
 
 **Files:**
 - Modify: `logs/tool_matrix.md` and/or install docs / README if they still mention `.worktrees/feat-text-audit-harness` or obsolete `/workspace/text-audit` as the only home
-- Grep the tree for `worktrees/feat-text-audit` and `text_audit` leftovers in user-facing docs
+- Grep the tree for `worktrees/feat-text-audit` and `slop_audit` leftovers in user-facing docs
 
 - [ ] **Step 1:** Grep and clean stale paths in tracked docs (do not rewrite historical design body beyond a short note if already present)
 - [ ] **Step 2:** `pytest -q` green

@@ -29,25 +29,24 @@ Thin smoke refresh only: `logs/tool_matrix.smoke.md`. This file is the authorita
 **Counts:** READY=13, NOT_RUN=2, total=15
 
 ## Install status (reference)
- (reference)
 
-From `logs/install_status.json` (best-effort; install OK ≠ runtime READY for heavy ML).
+From `logs/install_status.json` (best-effort; install OK ≠ runtime READY for heavy ML). Paths are relative to the clone root (`$ROOT`); re-run `bash scripts/install_all.sh` after cloning — do not rely on old worktree paths.
 
-- `ai-detect`: OK — uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-aidetect/bi
-- `ai-slop-detect`: OK — uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/pytho
+- `ai-detect`: OK — `uv pip install` into `envs/ml-aidetect` (see `scripts/install_all.sh`)
+- `ai-slop-detect`: OK — `uv pip install` into `envs/slop`
 - `binoculars`: OK — installed with modern transformers (upstream pin skipped)
-- `clarity`: OK — uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/ml-clarity/bin
-- `dslop`: OK — uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/pytho
-- `envs/slop`: OK — freeze → logs/pip_freeze_slop.txt
+- `clarity`: OK — `uv pip install` into `envs/ml-clarity`
+- `dslop`: OK — `uv pip install` into `envs/slop`
+- `envs/slop`: OK — freeze → `logs/pip_freeze_slop.txt`
 - `fastdetectgpt`: OK — venv+deps+clone ready (script repo, no pip package)
-- `languagetool`: OK — already present under /workspace/text-audit/.worktrees/feat-text-audit-harness/tools/languagetool
-- `proselint`: OK — uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/pytho
-- `slop-lint`: OK — npm install --prefix /workspace/text-audit/.worktrees/feat-text-audit-harness/tools slop-lint
-- `slopscore-lint`: OK — uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/pytho
-- `slopsift`: OK — npm install --prefix /workspace/text-audit/.worktrees/feat-text-audit-harness/tools slopsift
-- `textstat`: OK — uv pip install --python /workspace/text-audit/.worktrees/feat-text-audit-harness/envs/slop/bin/pytho
-- `vale`: OK — installed /workspace/text-audit/.worktrees/feat-text-audit-harness/tools/vale/vale (v3.21.0)
-- `write-good`: OK — npm install --prefix /workspace/text-audit/.worktrees/feat-text-audit-harness/tools write-good
+- `languagetool`: OK — under `tools/languagetool`
+- `proselint`: OK — `uv pip install` into `envs/slop`
+- `slop-lint`: OK — `npm install --prefix tools`
+- `slopscore-lint`: OK — `uv pip install` into `envs/slop`
+- `slopsift`: OK — `npm install --prefix tools`
+- `textstat`: OK — `uv pip install` into `envs/slop`
+- `vale`: OK — `tools/vale/vale` (v3.21.0)
+- `write-good`: OK — `npm install --prefix tools`
 
 ## Notes
 

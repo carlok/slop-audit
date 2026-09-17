@@ -6,8 +6,8 @@ import os
 from pathlib import Path
 from typing import Any
 
-from text_audit.adapters.base import ROOT, run_cmd, write_raw
-from text_audit.adapters.ml_common import (
+from slop_audit.adapters.base import ROOT, run_cmd, write_raw
+from slop_audit.adapters.ml_common import (
     MEM_FASTDETECT_DEFAULT,
     clamp01,
     make_result,
@@ -15,7 +15,7 @@ from text_audit.adapters.ml_common import (
     probe_import,
     venv_python,
 )
-from text_audit.models import ToolStatus
+from slop_audit.models import ToolStatus
 
 TOOL = "fastdetectgpt"
 VERSION = "local_infer"

@@ -6,8 +6,8 @@ import os
 from pathlib import Path
 from typing import Any
 
-from text_audit.adapters.base import ROOT, run_cmd, write_raw
-from text_audit.adapters.ml_common import (
+from slop_audit.adapters.base import ROOT, run_cmd, write_raw
+from slop_audit.adapters.ml_common import (
     MEM_CLARITY_BINOCULARS,
     MEM_CLARITY_FAST,
     clamp01,
@@ -16,7 +16,7 @@ from text_audit.adapters.ml_common import (
     probe_import,
     venv_python,
 )
-from text_audit.models import ToolStatus
+from slop_audit.models import ToolStatus
 
 TOOL = "clarity"
 VERSION = "0.2.0"

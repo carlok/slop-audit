@@ -6,19 +6,20 @@ import traceback
 from pathlib import Path
 from typing import Any, Callable
 
-from text_audit.adapters import get_adapters
-from text_audit.adapters.base import ROOT as _DEFAULT_ROOT
-from text_audit.env_inspect import inspect_environment
-from text_audit.input_stats import compute_input_stats
-from text_audit.logging_util import append_log
-from text_audit.models import (
+from slop_audit.adapters import get_adapters
+from slop_audit.adapters.base import ROOT as _DEFAULT_ROOT
+from slop_audit.env_inspect import inspect_environment
+from slop_audit.input_stats import compute_input_stats
+from slop_audit.logging_util import append_log
+from slop_audit.models import (
     CATEGORY_STATS,
     ToolResult,
     ToolStatus,
 )
-from text_audit.report import write_reports
-from text_audit.scoring_ai import compute_ai_likeness
-from text_audit.scoring_slop import compute_slop_index
+from slop_audit.phenomena import corroborated_findings
+from slop_audit.report import write_reports
+from slop_audit.scoring_ai import compute_ai_likeness
+from slop_audit.scoring_slop import compute_slop_index
 
 ROOT: Path = _DEFAULT_ROOT
 
@@ -247,6 +248,8 @@ def run_audit(input_path, force: bool = False) -> dict:
     ai = compute_ai_likeness(results)
     stats_native = _stats_native(results)
 
+    corroborated = corroborated_findings(results)
+
     report_paths = write_reports(
         out_dir=ROOT / "report",
         environment=environment,
@@ -255,7 +258,7 @@ def run_audit(input_path, force: bool = False) -> dict:
         slop=slop,
         ai=ai,
         stats_native=stats_native,
-        corroborated=[],
+        corroborated=corroborated,
         false_positives=[],
     )
 

@@ -1,5 +1,5 @@
-from text_audit.models import ToolResult, ToolStatus, CATEGORY_AI
-from text_audit.scoring_ai import (
+from slop_audit.models import ToolResult, ToolStatus, CATEGORY_AI
+from slop_audit.scoring_ai import (
     FAMILY_WEIGHTS,
     compute_ai_likeness,
     to_ai_likeness_score,

@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from text_audit.adapters.base import ROOT
-from text_audit.models import CATEGORY_PROSE, CATEGORY_STATS, ToolStatus
+from slop_audit.adapters.base import ROOT
+from slop_audit.models import CATEGORY_PROSE, CATEGORY_STATS, ToolStatus
 
 FIX = ROOT / "tests" / "fixtures" / "short.txt"
 
@@ -91,8 +91,8 @@ LT_STDOUT = """\
 
 
 def test_parse_vale_maps_severities():
-    from text_audit.adapters.vale_adapter import parse_stdout
-    from text_audit.normalize import normalize_from_counts
+    from slop_audit.adapters.vale_adapter import parse_stdout
+    from slop_audit.normalize import normalize_from_counts
 
     parsed = parse_stdout(VALE_STDOUT, word_count=100)
     assert parsed["errors"] == 1
@@ -105,8 +105,8 @@ def test_parse_vale_maps_severities():
 
 
 def test_parse_proselint_counts_diagnostics():
-    from text_audit.adapters.proselint_adapter import parse_stdout
-    from text_audit.normalize import normalize_from_counts
+    from slop_audit.adapters.proselint_adapter import parse_stdout
+    from slop_audit.normalize import normalize_from_counts
 
     parsed = parse_stdout(PROSELINT_STDOUT, word_count=50)
     assert parsed["warnings"] == 2
@@ -118,8 +118,8 @@ def test_parse_proselint_counts_diagnostics():
 
 
 def test_parse_write_good_counts_lines():
-    from text_audit.adapters.write_good import parse_stdout
-    from text_audit.normalize import normalize_from_counts
+    from slop_audit.adapters.write_good import parse_stdout
+    from slop_audit.normalize import normalize_from_counts
 
     parsed = parse_stdout(WRITE_GOOD_STDOUT, word_count=40)
     assert parsed["warnings"] == 3
@@ -130,8 +130,8 @@ def test_parse_write_good_counts_lines():
 
 
 def test_parse_languagetool_counts_matches():
-    from text_audit.adapters.languagetool_adapter import parse_stdout
-    from text_audit.normalize import normalize_from_counts
+    from slop_audit.adapters.languagetool_adapter import parse_stdout
+    from slop_audit.normalize import normalize_from_counts
 
     parsed = parse_stdout(LT_STDOUT, word_count=80)
     assert parsed["findings_count"] == 2
@@ -144,8 +144,8 @@ def test_parse_languagetool_counts_matches():
 
 
 def test_parse_harper_reuses_vale_json():
-    from text_audit.adapters.harper_adapter import parse_stdout
-    from text_audit.normalize import normalize_from_counts
+    from slop_audit.adapters.harper_adapter import parse_stdout
+    from slop_audit.normalize import normalize_from_counts
 
     harper_json = """\
 {
@@ -164,7 +164,7 @@ def test_parse_harper_reuses_vale_json():
 
 
 def test_stats_compute_has_required_keys():
-    from text_audit.adapters.stats_adapter import compute_stats
+    from slop_audit.adapters.stats_adapter import compute_stats
 
     text = (
         "Hello world. This is a test sentence with several words. "
@@ -195,37 +195,37 @@ def _exists(rel: str) -> bool:
     "mod_name, tool, category, probe",
     [
         (
-            "text_audit.adapters.vale_adapter",
+            "slop_audit.adapters.vale_adapter",
             "vale",
             CATEGORY_PROSE,
             "tools/vale/vale",
         ),
         (
-            "text_audit.adapters.proselint_adapter",
+            "slop_audit.adapters.proselint_adapter",
             "proselint",
             CATEGORY_PROSE,
             "envs/slop/bin/proselint",
         ),
         (
-            "text_audit.adapters.write_good",
+            "slop_audit.adapters.write_good",
             "write_good",
             CATEGORY_PROSE,
             "tools/node_modules/.bin/write-good",
         ),
         (
-            "text_audit.adapters.harper_adapter",
+            "slop_audit.adapters.harper_adapter",
             "harper",
             CATEGORY_PROSE,
             "tools/vale/vale",
         ),
         (
-            "text_audit.adapters.languagetool_adapter",
+            "slop_audit.adapters.languagetool_adapter",
             "languagetool",
             CATEGORY_PROSE,
             "tools/languagetool/LanguageTool-6.6/languagetool-commandline.jar",
         ),
         (
-            "text_audit.adapters.stats_adapter",
+            "slop_audit.adapters.stats_adapter",
             "stats",
             CATEGORY_STATS,
             "envs/slop/bin/python",
@@ -273,7 +273,7 @@ def test_integration_run_or_not_run(mod_name, tool, category, probe):
 
 
 def test_adapters_registered_include_fj_stats():
-    from text_audit.adapters import ALL_ADAPTERS, get_adapters
+    from slop_audit.adapters import ALL_ADAPTERS, get_adapters
 
     names = {getattr(a, "tool", a.__name__) for a in get_adapters()}
     expected = {

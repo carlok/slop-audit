@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from text_audit.adapters.base import ROOT
-from text_audit.models import CATEGORY_SLOP, ToolStatus
+from slop_audit.adapters.base import ROOT
+from slop_audit.models import CATEGORY_SLOP, ToolStatus
 
 FIX = ROOT / "tests" / "fixtures" / "short.txt"
 
@@ -90,7 +90,7 @@ FAIL on em-dash; warnings are prompts to review, not bans.
 
 
 def test_parse_slopscore_uses_native_score_and_severities():
-    from text_audit.adapters.slopscore import parse_stdout
+    from slop_audit.adapters.slopscore import parse_stdout
 
     parsed = parse_stdout(SLOPSCORE_STDOUT, word_count=58)
     assert parsed["errors"] == 1
@@ -102,8 +102,8 @@ def test_parse_slopscore_uses_native_score_and_severities():
 
 
 def test_parse_dslop_counts_violations_and_normalizes():
-    from text_audit.adapters.dslop_adapter import parse_stdout
-    from text_audit.normalize import normalize_from_counts
+    from slop_audit.adapters.dslop_adapter import parse_stdout
+    from slop_audit.normalize import normalize_from_counts
 
     parsed = parse_stdout(DSLOP_STDOUT, word_count=100)
     assert parsed["errors"] == 0
@@ -116,8 +116,8 @@ def test_parse_dslop_counts_violations_and_normalizes():
 
 
 def test_parse_slopsift_uses_counts():
-    from text_audit.adapters.slopsift import parse_stdout
-    from text_audit.normalize import normalize_from_counts
+    from slop_audit.adapters.slopsift import parse_stdout
+    from slop_audit.normalize import normalize_from_counts
 
     parsed = parse_stdout(SLOPSIFT_STDOUT, word_count=58)
     assert parsed["errors"] == 1
@@ -130,7 +130,7 @@ def test_parse_slopsift_uses_counts():
 
 
 def test_parse_ai_slop_detect_uses_ai_score():
-    from text_audit.adapters.ai_slop_detect import parse_stdout
+    from slop_audit.adapters.ai_slop_detect import parse_stdout
 
     parsed = parse_stdout(AI_SLOP_STDOUT, word_count=20)
     assert parsed["normalized_score"] == pytest.approx(83.0)
@@ -140,8 +140,8 @@ def test_parse_ai_slop_detect_uses_ai_score():
 
 
 def test_parse_slop_lint_counts_emdash_and_warnings():
-    from text_audit.adapters.slop_lint import parse_stdout
-    from text_audit.normalize import normalize_from_counts
+    from slop_audit.adapters.slop_lint import parse_stdout
+    from slop_audit.normalize import normalize_from_counts
 
     parsed = parse_stdout(SLOP_LINT_STDOUT, word_count=50)
     assert parsed["errors"] == 1
@@ -159,11 +159,11 @@ def _bin_exists(rel: str) -> bool:
 @pytest.mark.parametrize(
     "mod_name, tool, bin_rel",
     [
-        ("text_audit.adapters.slopscore", "slopscore", "envs/slop/bin/slopscore-lint"),
-        ("text_audit.adapters.dslop_adapter", "dslop", "envs/slop/bin/dslop"),
-        ("text_audit.adapters.slopsift", "slopsift", "tools/node_modules/.bin/slopsift"),
-        ("text_audit.adapters.ai_slop_detect", "ai_slop_detect", "envs/slop/bin/ai-slop"),
-        ("text_audit.adapters.slop_lint", "slop_lint", "tools/node_modules/slop-lint/slop-lint.mjs"),
+        ("slop_audit.adapters.slopscore", "slopscore", "envs/slop/bin/slopscore-lint"),
+        ("slop_audit.adapters.dslop_adapter", "dslop", "envs/slop/bin/dslop"),
+        ("slop_audit.adapters.slopsift", "slopsift", "tools/node_modules/.bin/slopsift"),
+        ("slop_audit.adapters.ai_slop_detect", "ai_slop_detect", "envs/slop/bin/ai-slop"),
+        ("slop_audit.adapters.slop_lint", "slop_lint", "tools/node_modules/slop-lint/slop-lint.mjs"),
     ],
 )
 def test_integration_run_or_not_run(mod_name, tool, bin_rel):
@@ -188,7 +188,7 @@ def test_integration_run_or_not_run(mod_name, tool, bin_rel):
 
 
 def test_adapters_registered():
-    from text_audit.adapters import ALL_ADAPTERS, get_adapters
+    from slop_audit.adapters import ALL_ADAPTERS, get_adapters
 
     names = {getattr(a, "tool", a.__name__) for a in get_adapters()}
     expected = {"slopscore", "dslop", "slopsift", "ai_slop_detect", "slop_lint"}

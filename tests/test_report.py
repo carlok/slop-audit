@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
-from text_audit.models import ToolResult, ToolStatus, CATEGORY_SLOP, CATEGORY_AI
-from text_audit.report import write_reports
+from slop_audit.models import ToolResult, ToolStatus, CATEGORY_SLOP, CATEGORY_AI
+from slop_audit.report import write_reports
 
 
 def _ok(tool, score, category=CATEGORY_SLOP):

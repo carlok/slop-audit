@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from text_audit.models import CATEGORY_SLOP, ToolResult, ToolStatus
+from slop_audit.models import CATEGORY_SLOP, ToolResult, ToolStatus
 
 
 def _make_fake(tool: str = "fake_tool", version: str = "1.0.0"):
@@ -37,10 +37,10 @@ def _make_fake(tool: str = "fake_tool", version: str = "1.0.0"):
 
 
 def test_second_run_skips_ok_tool(tmp_path, monkeypatch):
-    from text_audit import runner
+    from slop_audit import runner
 
     monkeypatch.setattr(runner, "ROOT", tmp_path)
-    monkeypatch.setattr("text_audit.adapters.base.ROOT", tmp_path)
+    monkeypatch.setattr("slop_audit.adapters.base.ROOT", tmp_path)
 
     fake = _make_fake()
     monkeypatch.setattr(runner, "get_adapters", lambda: [fake])

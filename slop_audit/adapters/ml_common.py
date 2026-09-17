@@ -4,8 +4,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from text_audit.adapters.base import ROOT, run_cmd
-from text_audit.models import CATEGORY_AI, ToolResult, ToolStatus
+from slop_audit.adapters.base import ROOT, run_cmd
+from slop_audit.models import CATEGORY_AI, ToolResult, ToolStatus
 
 GIB = 1024**3
 

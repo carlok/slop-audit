@@ -4,7 +4,7 @@ Local multi-tool harness that scores **prose for AI-slop / formulaic style**, ge
 
 Nothing leaves your machine for detection: no hosted detector APIs, no remote LLMs on the target text. Network is only for installs and optional model-weight downloads.
 
-Repository: [github.com/carlok/slop-audit](https://github.com/carlok/slop-audit) (private). Licensed under the [MIT License](LICENSE).
+Repository: [github.com/carlok/slop-audit](https://github.com/carlok/slop-audit). Licensed under the [MIT License](LICENSE).
 
 ## What you get
 

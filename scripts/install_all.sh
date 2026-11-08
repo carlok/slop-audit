@@ -62,6 +62,23 @@ install_slop_env() {
     log_fail "ai-slop-detect" "pip install from git failed" "${cmd}"
   fi
 
+  # Security advisory pins (transitive deps)
+  local pin_pkgs=(
+    "nltk>=3.10.4"
+    "setuptools>=84.1.0"
+  )
+  local pin
+  for pin in "${pin_pkgs[@]}"; do
+    set +e
+    cmd="uv pip install --python ${venv}/bin/python ${pin}"
+    log_msg "CMD: ${cmd}"
+    if venv_pip "${venv}" "${pin}"; then
+      log_ok "${pin}" "${cmd}"
+    else
+      log_fail "${pin}" "pip install failed" "${cmd}"
+    fi
+  done
+
   venv_freeze "${venv}" "${LOG_DIR}/pip_freeze_slop.txt"
   if [[ -x "${venv}/bin/python" ]]; then
     log_ok "envs/slop" "create_venv + package installs" "freeze → logs/pip_freeze_slop.txt"
